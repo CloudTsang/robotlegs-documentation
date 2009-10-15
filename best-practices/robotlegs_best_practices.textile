@@ -1,12 +1,13 @@
+<div align="center">!=http://joelhooks.com/wp-content/uploads/2009/07/robotlegssketchsmall.gif!</div>
 h2. Table of Contents
 
 # *"What is Robotlegs":#whatisrobotlegs*
 ## "Dependency Injection":#dependencyinjection
 ### "Using Injectors":#usingtheinjectors
-###"Injection Syntax for the SwiftSuspenders Adapter":#injectionsyntax
-###"Injection Mapping with the Injector Class":#mappingwithinjector
-###"Injection Mapping with the MediatorMap Class":#mappingwithmediatormap
-###"Injection Mapping with the CommandMap Class":#mappingwithcommandmap
+### "Injection Syntax for the SwiftSuspenders Adapter":#injectionsyntax
+### "Injection Mapping with the Injector Class":#mappingwithinjector
+### "Injection Mapping with the MediatorMap Class":#mappingwithmediatormap
+### "Injection Mapping with the CommandMap Class":#mappingwithcommandmap
 ## "The Context":#thecontext
 # *"MVC+S Reference Implementation":#mvcs*
 ## "Context":#context
@@ -76,9 +77,9 @@ SwiftSuspenders supports three types of dependency injection.
 For the purposes of tis document, we are going to examine Property injection, and how this is used within Robotlegs. There are two options for injecting properties into your class. You can use unnamed, or named injection:
 
 <pre>[Inject]
-public var myDependency:Depedency; //unnamed injection
+public var myDependency:Depedency; //unnamed injection</pre>
 
-[Inject(name="myNamedDependency")]
+<pre>[Inject(name="myNamedDependency")]
 public var myNamedDependency:NamedDepedency; //named injection</pre>
 
 Injection mappings are supplied to Robotlegs in three places. The MediatorMap, the CommandMap, and through the Injector directly. Both the MediatorMap and the CommandMap are making use of the Injector as well, but they are doing additional work required by these tiers. As the names imply, MediatorMap is used for mapping Mediators, CommandMap is used for mapping Commands, and anything else that needs to be injected (including but not limited to Models) is mapped directly with the Injector.
@@ -91,13 +92,14 @@ Below are the four mapping methods that are provided with classes that implement
 
 <pre>mapValue(whenAskedFor:Class, useValue:Object, named:String = null)</pre>
 
-mapValue is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
+*mapValue* is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
 
 <pre>//someplace in your application where mapping/configuration occurs
 var myClassInstance:MyClass = new MyClass();
-mapValue(MyClass, myClassInstance);
---
-//in the class to receive injections
+mapValue(MyClass, myClassInstance);</pre>
+
+
+<pre>//in the class to receive injections
 [Inject]
 public var myClassInstance:MyClass</pre>
 
@@ -105,16 +107,18 @@ The instance of MyClass is create and is held waiting to be injected when reques
 
 <pre>mapClass(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
 
-mapClass provides a unique instance of the mapped class for each injection request.
+*mapClass* provides a unique instance of the mapped class for each injection request.
 
 <pre>//someplace in your application where mapping/configuration occurs
-mapValue(MyClass, MyClass);
---
-//in the first class to receive injections
+mapValue(MyClass, MyClass);</pre>
+
+
+<pre>//in the first class to receive injections
 [Inject]
 public var myClassInstance:MyClass</pre>
---
-//in the second class to receive injections
+
+
+<pre>//in the second class to receive injections
 [Inject]
 public var myClassInstance:MyClass</pre>
 
@@ -122,16 +126,18 @@ Each of the injections above will provide a _unique_ instance of MyClass to fulf
 
 <pre>mapSingleton(whenAskedFor:Class, named:String = null)</pre>
 
-mapSingleton provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framewok, and not a Singleton enforced within the class itself. 
+*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framewok, and not a Singleton enforced within the class itself. 
 
 <pre>//someplace in your application where mapping/configuration occurs
-mapSingleton(MyClass);
---
-//in the first class to receive injections
+mapSingleton(MyClass);</pre>
+
+
+<pre>//in the first class to receive injections
 [Inject]
 public var myClassInstance:MyClass</pre>
---
-//in the second class to receive injections
+
+
+<pre>//in the second class to receive injections
 [Inject]
 public var myClassInstance:MyClass</pre>
 
@@ -139,16 +145,17 @@ In the above example, both injections requests will be filled with the same inst
 
 <pre>mapSingletonOf(whenAskedFor:Class, useSingletonOf:Class, named:String = null)</pre>
 
-mapSingletonOf is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
+*mapSingletonOf* is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
 
 <pre>//someplace in your application where mapping/configuration occurs
-mapSingletonOg(IMyClass, MyClass); //MyClass implements IMyClass
---
-//in the first class to receive injections
+mapSingletonOg(IMyClass, MyClass); //MyClass implements IMyClass</pre>
+
+<pre>//in the first class to receive injections
 [Inject]
 public var myClassInstance:IMyClass</pre>
---
-//in the second class to receive injections
+
+
+<pre>//in the second class to receive injections
 [Inject]
 public var myClassInstance:IMyClass</pre>
 
@@ -160,12 +167,13 @@ The MediatorMap class implements IMediatorMap, which provides two methods for ma
 
 <pre>mapView(viewClassOrName:*, mediatorClass:Class, autoCreate:Boolean = true, autoRemove:Boolean = true)</pre>
 
-mapView accepts a view class, MyAwesomeWidget, or a fully qualified class name for a view, _com.me.app.view.components::MyAwesomeWidget_ as the first parameter. The second parameter is the Mediator class that will mediate the view component. The two additional parameters autoCreate and autoRemove are boolean switches that provide convenient automatic mediator management.
+*mapView* accepts a view class, MyAwesomeWidget, or a fully qualified class name for a view, _com.me.app.view.components::MyAwesomeWidget_ as the first parameter. The second parameter is the Mediator class that will mediate the view component. The two additional parameters autoCreate and autoRemove are boolean switches that provide convenient automatic mediator management.
 
 <pre>//someplace in your application where mapping/configuration occurs
-mapView(MyAwesomeWidget, MyAwesomeWidgetMediator); 
---
-//somewhere inside of the contextView's display list
+mapView(MyAwesomeWidget, MyAwesomeWidgetMediator); </pre>
+
+
+<pre>//somewhere inside of the contextView's display list
 var myAwesomeWidget:MyAwesomeWidget = new MyAwesomeWidget();
 this.addChild(myAwesomeWidget); //the ADDED_TO_STAGE event is dispatched, which triggers the view component to be mediated</pre>
 
@@ -186,9 +194,10 @@ You will provide the commandMap with a class to execute, the type of event that 
 The strongly typed event class optional parameter is used as extra protection against the Flash platforms "magic string" event type system. This will prevent any conflict between events that might have the same String type, but are actually types of different event classes.
 
 <pre>//someplace in your application where mapping/configuration occurs
-mapEvent(MyCoolCommand, MyAppDataEvent.DATA_WAS_RECEIVED, MyAppDataEvent); 
---
-//in another framework actor an event is dispatched
+mapEvent(MyCoolCommand, MyAppDataEvent.DATA_WAS_RECEIVED, MyAppDataEvent); </pre>
+
+
+<pre>//in another framework actor an event is dispatched
 //this triggers the mapped command which is subsequently executed
 dispatchEvent(new MyAppDataEvent(MyAppDataEvent.DATA_WAS_RECEIVED, someTypedPayload))</pre>
 
@@ -532,7 +541,6 @@ The Service class provides a convenience method _dispatchEvent_ for sending fram
 h2(#unittesting). Unit Testing
 
 _coming soon_
-
 
 
 
