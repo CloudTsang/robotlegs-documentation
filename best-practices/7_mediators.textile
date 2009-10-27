@@ -1,0 +1,133 @@
+h2(#mediators). Mediators
+
+The Mediator class is used to mediate a user's interaction with an application's View Components. A Mediator can perform this duty at multiple levels of granularity, mediating an entire application and all of its sub-components, or any and all of an application's sub-components directly.
+
+h3(#mediatorresponsibilities). Mediator Responsibilities
+
+Flash, Flex and AIR applications provide virtually limitless possibilities for rich visual user interface components. All of these platforms provide out of the box components such as DataGrids, Buttons, Labels and other common UI components. It is also possible to extend these basic components into custom components, create composite components, or write components from scratch.
+
+A View Component is any UI component and/or its sub-components. A View Component is encapsulated, handling its own state and operations as much as possible. A View Component provides an API via events, simple methods, and properties upon which Mediators act upon to affect the View Component within a Context. Mediators are responsible for interacting with the framework on behalf of the View Components that they mediate. This includes listening for Events on the components and their sub-components, accessing methods, and reading/setting properties on the components.
+
+A Mediator listens for Events on its View Component, and accesses data directly on the View Component via its exposed API. A Mediators acts on behalf of other framework actors by responding to their Events and modifying its View Component accordingly. A Mediator notifies other framework actors of Events created by the View Component by relaying those Events, or dispatching appropriate Events to the framework.
+
+h3(#mappingamediator). Mapping a Mediator
+
+A Mediator can be mapped in any class that has has the _mediatorMap_ instance available. This includes the Mediator, Context, and Command classes.
+
+This is the syntax for mapping a mediator:
+<pre>mediatorMap.mapView( ViewClass, MediatorClass, autoCreate, autoRemove );</pre>
+
+h3(#automaticmediation). Automatic Mediation of View Components
+
+When a view component class is mapped for mediation, you can specify if you would like to have the Mediator for the class created automatically. When this option is _true_ the context will listen for the view component instance to dispatch its ADDED_TO_STAGE event. When this event is received, the view component will be automatically mediated and its mediator can begin to send and receive framework events.
+
+h3(#manualmediation). Manually Mediation of View Components
+
+There are occasions where the automatic mediation of view components is not desired, or impossible. In these cases, it is possible to manually create the Mediator instance for a class:
+
+<pre>mediatorMap.createMediator(contextView);</pre>
+
+The above assumes that the view component was previously mapped to a mediator using the _mapView()_ method of the _mediatorMap_.
+
+h3(#mappingthecontextview). Mapping the Main Application (_contextView_) Mediator
+
+It is a common pattern to map the contextView to a mediator. This is a special situation, as the automatic mediation cannot be performed on the contextView, as it is already added to the stage and will no longer fire the appropriate events the _mediatorMap_ uses to provide this convenience. Typically, this mapping can be done inside the _startup()_ method of the Context that holds a reference to the _contextView_:
+
+<pre>override public function startup():void
+{
+	mediatorMap.mapView(MediateApplicationExample, AppMediator);
+	mediatorMap.createMediator(contextView);
+}</pre>
+
+The _contextView_ is now fully mediated and can send and receive framework events.
+
+h3(#accessingmediatorviewcomponent). Accessing a Mediator's View Component
+
+When a View Component is added to the stage within a Context's contextView, it is by default mediated automatically based on configuration supplied to the MediatorMap when the mapping was made. In a basic mediator, the _viewComponent_ property is injected with the view component that is being mediated. A Mediator's _viewComponent_ property is of type Object. In most cases, we want access to a strongly typed object to receive the benefits provided by using strongly typed objects. To achieve this, we inject the typed instance of the view component that is being mediated:
+
+<pre>public class GalleryLabelMediator extends Mediator implements IMediator
+{
+	[Inject]
+	public var myCustomComponent:MyCustomComponent;
+		
+	/**
+	* overriding the onRegister method is a good chance to
+	* add any system or View Component Events the Mediator
+	* is interested in receiving.
+	*/
+	override public function onRegister():void
+	{
+		//adding an event listener to the Context for framework events
+		addEventListenerTo( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
+		//adding an event listener to the view component being mediated
+		addEventListenerTo( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
+	}
+	
+	protected function handleDoStuff(event:MyCustomEvent):void
+	{
+		//setting a property on the view component from the
+		//strongly typed event payload. The view component
+		//will likely manage its own state based on this
+		//new data.
+		myCustomComponent.aProperty = event.payload
+	}
+	
+	protected function handleDidSomeStuff(event:MyCustomEvent):void
+	{
+		//relaying the event to the framework
+		dispatch(event)
+	}
+}</pre>
+
+Following this approach we now have easy direct access to the public properties and methods of the mediated view component.
+
+h3(#addingeventlistenerstomediators). Adding Event Listeners to a Mediator
+
+Event listeners are the eyes and ears of concrete Mediators. Since all communication within the framework is handled via native Flash events, event listeners will be placed on Mediators to respond to their interests. In addition to framework events, Mediators listen for events from the view components that they are actively mediating.
+
+It is common to add event listeners in the onRegister method of the Mediator. At this phase of the Mediator's lifecycle, it has been registered and its view component and other dependencies have been injected. The onRegister method must be overridden in concrete Mediator classes. Event listeners may be added in other methods as well, including event handler methods that are responding to both framework and view component events.
+
+Mediators are equipped with a convenience method, _addEventListenerTo_. This method registers each event added to the Mediator, and ensures that the event is removed when the mediator is unregistered from the framework. It is important to remove events in Flash, as events that are added, but not removed from a class eliminate the Player's ability to perform runtime Garbage Collection on that class. It is possible to add your event listeners with the traditional Flash syntax, but be aware that you will also need to remove them manually as well.
+
+h3(#mediatorslisteningfroframeworkevents). Listening for Framework Events
+
+All of the actors in the framework carry an _eventDispatcher_ property that is injected into the class when it has been instantiated. The _eventDispatcher_ is a Mediator's mechanism for sending and receiving framework events. 
+
+<pre>addEventListenerTo(eventDispatcher, SomeEvent.IT_IS_IMPORTANT, handleFrameworkEvent)</pre>
+
+Using this syntax, a Mediator is now listening for _SomeEvent.IT_IS_IMPORTANT_ which will be handled by a method called _handleFrameworkEvent_
+
+h3(#mediatorsdispatchingframeworkevents). Dispatching Framework Events
+
+An equally important duty of a Mediator is sending out events to the framework that other actors might be interested in. These events are generally sent in response to some interaction with the mediated view component by the user of the application. Again, a convenience method is supplied to reduce some of the typing necessary to dispatch an event to the framework
+
+<pre>dispatch(new SomeEvent(SomeEvent.YOU_WILL_WANT_THIS, myViewComponent.someData))</pre>
+
+This event can now be received by other Mediators or execute a command. The Mediator that dispatched the event is not concerned with how other actors within the application will respond to the event, it is simply broadcasting the message that something has occurred. A mediator may also listen for the events that it dispatches, and respond to them accordingly.
+
+h3(#mediatorslisteningforcomponentevents). Listening for View Component Events
+
+A Mediator is responsible for listening to events dispatched by the view component being mediated. This can be a single component, such as a TextField or Button, or a complex hierarchy of nested components. When a view component event has been added to a mediator it will be handled by the method designated to handle the event. As with framework events, the _addEventListenerTo_ convenience method is the preferred syntax for adding event listeners to a mediator:
+
+<pre>addEventListenerTo(myMediatedViewComponent, SomeEvent.USER_DID_SOMETHING, handleUserDidSomethingEvent)</pre>
+
+In response to an event received from a view component, a mediator might:
+
+* examine the payload of the event (if it exists)
+* examine the current state of the view component
+* perform work on the view component as required
+* send framework events to notify other actors that something has occurred
+
+h3(#accessingmodelsandservicesfrommediators). Accessing Models and Services via a Mediator
+
+To promote loose coupling your mediators can listen for system events that will be dispatched by Service and Model classes. By listening for events, your mediators do not need to be interested in where these events originate from, they just make use of the strongly typed payload the event carries with it. For this purpose, multiple mediators can be listening for the same event, adjusting their state according to the data that they have received.
+
+Directly accessing services through a mediator can provide convenience, without serious risk of coupling. A service is not storing data, simply providing an API for making requests to an external service and receiving the response. Being able to access this API directly can save your application from unnecessary command classes to achieve the same goal. If the service API is repeatedly accessed in the same way from many mediators, it can be beneficial to encapsulate this behavior in a command to keep the behavior consistent and reduce the repetition of injecting the service and accessing it directly in your mediators.
+
+In some cases it is appropriate to inject a reference to your application model(s) directly into your mediator. This provides convenient access to the data stored on the model. While reading data is a convenient mechanism in some cases, you are discouraged from writing directly to your model(s) within your mediators. Writing data back to the model from a mediator tightly couples the mediator to the model, as it is now doing work ON the model. The recommended practice for _writing_ data to the model is via a command. To enforce this the recommended practice is to create read-only interfaces for your model classes that you wish to inject into mediators. Utilizing interfaces that strictly define getters will allow for the convenience of accessing your data directly while enforcing best practices. In addition, this approach will allow you to easily replace your injected models with "stub classes":http://blog.springsource.com/2007/01/15/unit-testing-with-stubs-and-mocks/ for the purposes of unit testing.
+
+_%{color:red}this explanation really deserves a proper code example!%_
+
+h3(#accessingothermediatorsfromamediator). Accessing Other Mediators
+
+As with Services and Models, it is possible to inject and access other Mediators in a Mediator. This practice is *highly discouraged* as the tight coupling can easily be avoided by communication through framework events.

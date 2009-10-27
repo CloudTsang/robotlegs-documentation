@@ -1,0 +1,48 @@
+h2(#models). Models
+
+[_this section is nowhere near complete_]
+
+The Model class is used to manage access to an application's data model. A Model provides an API that is used by other framework actors to access, manipulate, and update application data. This data includes, but is not limited to, native data types such as native data types such as String, Array, or ArrayCollection as well as domain specific Objects or collections of these.
+
+h3(#modelresponsibilities). Model Responsibilities
+
+Concrete Model classes encapsulate and provide an API for the application data model. The Model class, as extended for application specific usage, is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly. 
+
+In addition to controlling access to the data model, the Model is routinely used to perform operations on the data to keep the data in a valid state. This includes performing calculations on the data, or other areas of domain specific logic. This responsibility of the Model is extremely important. The Model is the tier of any given application with the highest potential for portability. By placing domain logic on the Model, future implementations of the model will not have to repeat this same logic as they would if it was placed in the View or Controller tiers.
+
+As an example, your Model class might perform a sales tax calculation on the shopping cart data that it is string. A Command will access this method, and the final calculation will be dispatched as an event that a Mediator is listening for. The mediator will then update its view component with the updated value. In the first iteration of the application it was a typical Flex application. This calculation could have easily been performed on a Mediator, or even the view itself. The second iteration of the application is a mobile Flash application that requires an entirely new view form factor. Since this logic is contained in the Model, it can be reused for both form factors with entirely different views.
+
+h3(#mappingamodel). Mapping a Model
+
+There are several methods available on the injector for mapping your Model classes for injection into your framework actors. In addition, these methods can be used for injecting virtually ANY class into your classes.
+
+To map an existing instance for injection that will be treated as a singleton, use the following syntax:
+<pre>injector.mapValue(MyModelClass, myModelClassInstance)</pre>
+
+To map a new instance of a class for each injection, use the following syntax:
+<pre>injector.mapClass(MyModelClass, MyModelClass)</pre>
+Additionally, this can be used to map interfaces for injection, with a concrete class that implements the interface being injected:
+<pre>injector.mapClass(IMyModelClass, MyModelClass)</pre>
+
+To map a singleton instance of an interface or class, use the following syntax:
+<pre>injector.mapSingleton(MyModelClass, MyModelClass)</pre>
+
+It is important to note that when referring to a singleton above, it is not a Singleton. It is not enforced outside of the Context as a Singleton. The injector simply insures that one and only one instance of the class will be injected. This is vital for Model classes that are handling your application data model.
+
+h3(#dispatchingeventsfrommodel). Dispatching Events from a Model
+
+The Model class provides a convenience method _dispatchEvent_ for sending framework events:
+
+<pre>dispatchEvent( new ImportantDataEvent(ImportantDataEvent.IMPORTANT_DATA_UPDATED))</pre>
+
+Events can be dispatched for any number of reasons, including but not limited to:
+
+* Data has been initialized and is ready for other actors to use
+* Some piece of data has been added to the Model
+* Data has been removed from the Model
+* Data has changed or updated
+* State has been changed related to the data
+
+h3(#listeningforeventsinmodel). Listening for Framework Events in a Model
+
+While this is technically possible it is *highly discouraged*. Don't do it. Just for the sake of clarity: *Don't do it*. If you do, don't say you weren't warned.

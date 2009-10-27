@@ -1,0 +1,47 @@
+<div align="center">!=http://joelhooks.com/wp-content/uploads/2009/07/robotlegssketchsmall.gif!</div>
+h2. Table of Contents
+
+# *"What is Robotlegs":#whatisrobotlegs*
+## "Dependency Injection":#dependencyinjection
+### "Using Injectors":#usingtheinjectors
+### "Injection Syntax for the SwiftSuspenders Adapter":#injectionsyntax
+### "Injection Mapping with the Injector Class":#mappingwithinjector
+### "Injection Mapping with the MediatorMap Class":#mappingwithmediatormap
+### "Injection Mapping with the CommandMap Class":#mappingwithcommandmap
+## "The Context":#thecontext
+# *"MVC+S Reference Implementation":#mvcs*
+## "Context":#context
+## "Model & Models":#modelandmodels
+## "View & Mediators":#viewandmediators
+## "Controller & Commands":#controllersandcommands
+## "Service & Services":#serviceandservices
+## "Framework Events":#frameworkevents
+## *"Commands":#commands*
+### "Command Responsibilities":#commandresponsibilities
+### "Triggering Commands":#triggeringcommands 
+### "Chaining Commands":#chainingcommands
+### "Decoupling Application Tiers":#decouplingtiers
+## *"Mediators":#mediators*
+### "Mediator Responsibilities":#mediatorresponsibilities
+### "Mapping a Mediator":#mappingamediator
+### "Automatic Mediation of View Components":#automaticmediation
+### "Manually Mediation of View Components":#manualmediation
+### "Mapping the Main Application (_contextView_) Mediator":#mappingthecontextview
+### "Accessing a Mediator's View Component":#accessingmediatorviewcomponent 
+### "Adding Event Listeners to a Mediator":#addingeventlistenerstomediators 
+### "Listening for Framework Events":#mediatorslisteningfroframeworkevents 
+### "Dispatching Framework Events":#Mediatorsdispatchingframeworkevents 
+### "Listening for View Component Events":#mediatorslisteningforcomponentevents 
+### "Accessing Models and Services via a Mediator":#accessingmodelsandservicesfrommediators 
+### "Accessing Other Mediators":#accessingothermediatorsfromamediator 
+## *"Models":#models*
+### "Model Responsibilities":#modelresponsibilities 
+### "Mapping a Model":#mappingamodel 
+### "Dispatching Events from a Model":#dispatchingeventsfrommodel 
+### "Listening for Framework Events in a Model":#listeningforeventsinmodel 
+## *"Services":#services*
+### "Service Responsibilities":#serviceresponsibilities 
+### "Mapping a Service":#mappingservice 
+### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents 
+### "Dispatching Framework Events":#servicedispatchingframeworkevents 
+## *"Unit Testing":#unittesting*

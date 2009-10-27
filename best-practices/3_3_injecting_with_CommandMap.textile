@@ -1,0 +1,17 @@
+h4(#mappingwithcommandmap). Injection Mapping with the CommandMap Class
+
+The CommandMap class implements ICommandMap, which provides one method for mapping commands to framework events that trigger them.
+
+<pre>mapEvent(commandClass:Class, eventType:String, eventClass:Class = null, oneshot:Boolean = false)</pre>
+
+You will provide the commandMap with a class to execute, the type of event that executes it, and optionally a strong typing for the event and a boolean switch if the command should be executed only a single time and then be unmapped. 
+
+The strongly typed event class optional parameter is used as extra protection against the Flash platforms "magic string" event type system. This will prevent any conflict between events that might have the same String type, but are actually types of different event classes.
+
+<pre>//someplace in your application where mapping/configuration occurs
+commandMap.mapEvent(MyCoolCommand, MyAppDataEvent.DATA_WAS_RECEIVED, MyAppDataEvent); </pre>
+
+
+<pre>//in another framework actor an event is dispatched
+//this triggers the mapped command which is subsequently executed
+dispatchEvent(new MyAppDataEvent(MyAppDataEvent.DATA_WAS_RECEIVED, someTypedPayload))</pre>

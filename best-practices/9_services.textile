@@ -1,0 +1,46 @@
+h2(#services). Services
+
+[_this section is nowhere near complete_]
+
+Services are utilized to access resources outside of the scope of the application. This is including, but certainly not limited to:
+
+* web services
+* file system
+* data bases
+* RESTful APIs
+* other Flash application via localConnection
+
+Services encapsulate this interaction with external entities, and manage the results, faults, and other events that result from this interaction.
+
+You might notice that the Service and Model base classes are very similar. In fact, you might notice that outside of the class name, they are exactly the same. Why have two classes then? Model and Service classes have entirely different responsibilities within an application. The concrete implementations of these classes will not be similar. Without this separation, you will generally find external service access being performed on Model classes. This creates Models that have the multiple duty of accessing external data, parsing results, handling faults, managing application data state, providing an API for data, providing an API for the service, etc. Separating these tiers helps to alleviate this problem.
+
+h3(#serviceresponsibilities). Service Responsibilities
+
+A Service class provides your application with an API for interacting with an external service. A service class will contact the external service ad manage the response that it receives. Services are typically stateless entities. They do not store the data that is returned from an external service, but instead send framework events so that response data and faults can be managed by the appropriate framework actors.
+
+h3(#mappingservice). Mapping a Service
+
+There are several methods available on the injector for mapping your Service classes for injection into your framework actors. In addition, these methods can be used for injecting virtually ANY class into your classes.
+
+To map an existing instance for injection that will be treated as a singleton, use the following syntax:
+<pre>injector.mapValue(MyServiceClass, myServiceClassInstance)</pre>
+
+To map a new instance of a class for each injection, use the following syntax:
+<pre>injector.mapClass(MyServiceClass, MyServiceClass)</pre>
+Additionally, this can be used to map interfaces for injection, with a concrete class that implements the interface being injected:
+<pre>injector.mapClass(IMyServiceClass, MyServiceClass)</pre>
+
+To map a singleton instance of an interface or class, use the following syntax:
+<pre>injector.mapSingleton(MyServiceClass, MyServiceClass)</pre>
+
+It is important to note that when referring to a singleton above, it is not a Singleton. It is not enforced outside of the Context as a Singleton. The injector simply insures that one and only one instance of the class will be injected.
+
+h3(#servicelisteningforframeworkevents). Listening for Framework Events in a Service
+
+While this is technically possible it is *highly discouraged*. Don't do it. Just for the sake of clarity: *Don't do it*. If you do, don't say you weren't warned.
+
+h3(#servicedispatchingframeworkevents). Dispatching Framework Events
+
+The Service class provides a convenience method _dispatchEvent_ for sending framework events:
+
+<pre>dispatchEvent( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>

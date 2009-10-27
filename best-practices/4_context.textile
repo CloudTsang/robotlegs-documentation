@@ -1,0 +1,3 @@
+h2(#thecontext). The Context
+
+At the heart of any Robotlegs implementation lies the Context. The Context, or Contexts as the case may be, provides the mechanism by which any given implementation's tiers will communicate. An application is by no means limited to a single Context, but for many use cases one Context is sufficient. With the ability to build modular applications on the Flash platform, you will see circumstances where multiple Contexts are necessary. The Context has three functions within an application: provide initialization, provide de-initialization, and provide the central event bus for communication.

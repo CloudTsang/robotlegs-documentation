@@ -1,0 +1,7 @@
+h2(#dependencyinjection). Dependency Injection
+
+Robotlegs revolves around the "Dependency Injection":http://www.insideria.com/2009/09/as3-dependency-injection-demys.html design pattern.
+
+bq. At the simplest, Dependency Injection is that act of supplying objects with their instance variables or properties. When you pass a variable to the constructor of a class, you are using Dependency Injection. When you set a property on a class, you are using Dependency Injection. If you aren't coding your AS3 in a strictly procedural or linear fashion, the odds are that you are making use of Dependency Injection right now.
+
+Robotlegs uses automated, metadata based Dependency Injection. This is provided as a convenience for the developer and has the advantage of greatly reducing the amount of code needed to wire together an application and provide classes with their necessary dependencies. While it is fully possible to supply these dependencies to your classes manually, allowing the framework to perform these duties reduces the chances for error and generally speeds up the coding process.

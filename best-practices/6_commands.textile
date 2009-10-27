@@ -1,0 +1,68 @@
+h2(#commands). Commands
+
+Commands are short-lived stateless objects. They are instantiated, executed and then immediately disposed of. Commands are only executed in response to framework events and should never be instantiated or executed by other framework actors.
+
+h3(#commandresponsibilities). Command Responsibilities
+
+Commands are registered to a Context via that Context's CommandMap. The CommandMap is available by default in Context and Command classes. Commands are registered to the Context with an Event type, the Command class to execute in response to the Event, and optionally the Event class and a one off setting for when a Command should be executed once, and then unregistered for future occurrences of an Event.
+
+h3(#triggeringcommands). Triggering Commands 
+
+Commands are triggered by framework events dispatched by Mediators, Services, Models, and other Commands. Typically the Event that triggered the Command is injected into the Command giving the Command access to the Event's properties/payload:
+
+<pre>
+public class MyCommand extends Command
+{
+	[Inject]
+	public var event:MyCustomEvent;
+	
+	[Inject]
+	public var model:MyModel;
+			
+	override public function execute():void
+	{
+		model.updateData( event.myCustomEventPayload )
+	}
+}
+</pre>
+
+When the mapped command is instantiated in response to a framework event, all of the dependencies that have been mapped and marked with the [Inject] metadata tag are injected into the Command. In addition, the event instance that triggered the Command is also injected. After these dependencies have been supplied, the executed method is called automatically and the Command's work is performed. It is not necessary, and should never be done, to call the execute() method directly. This is the framework implementation's job.
+
+h3(#chainingcommands). Chaining Commands
+
+It is also possible to chain commands:
+
+<pre lang="actionscript">
+public class MyChainedCommand extends Command
+{
+	[Inject]
+	public var event:MyCustomEvent;
+	
+	[Inject]
+	public var model:MyModel;
+			
+	override public function execute():void
+	{
+		model.updateData( event.myCustomEventPayload )
+		
+		//the UPDATED_WITH_NEW_STUFF event triggers a command and is also received by
+		//a mediator to update a View Component, but only if a response is requested
+		if(event.responseNeeded)
+		    dispatch( new MyCustomEvent( MyCustomEvent.UPDATED_WITH_NEW_STUFF, model.getCalculatedResponse() ) )
+	}
+}
+</pre>
+
+Using this approach it is possible to chain as many Commands as needed together. In the example above a conditional statement is used. If the condition is not met, the Command is not chained. This provides extreme flexibility within your Commands to perform work on your application.
+
+h3(#decouplingtiers). Decoupling Application Tiers
+
+Commands are a very useful mechanism for decoupling the various actors of an application. Because a Command is never instantiated or executed from a Mediator, Model or Service, these classes are never coupled to, or even aware of the existence of Commands.
+
+To perform their duties, Commands may:
+
+* Map Mediators, Models, Services, or other Commands within their Context
+* Dispatch Events to be received by Mediators or trigger other Commands
+* Be injected with Models, Services, and Mediators to perform work on directly
+
+Something to note is that it is not recommended to interact directly with Mediators in a Command. While it is possible, it will couple that Mediator to that Command. Since Mediators, unlike Services and Models, are able to receive system Events, the better practice is to simply dispatch an Event from the Command and listen for it on Mediators that need to respond to the Events.

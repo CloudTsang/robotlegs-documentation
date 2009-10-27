@@ -1,0 +1,21 @@
+h4(#mappingwithmediatormap). Injection Mapping with the MediatorMap Class
+
+The MediatorMap class implements IMediatorMap, which provides two methods for mapping your mediators to views and registering them for injection.
+
+<pre>mapView(viewClassOrName:*, mediatorClass:Class, autoCreate:Boolean = true, autoRemove:Boolean = true)</pre>
+
+*mapView* accepts a view class, MyAwesomeWidget, or a fully qualified class name for a view, _com.me.app.view.components::MyAwesomeWidget_ as the first parameter. The second parameter is the Mediator class that will mediate the view component. The two additional parameters autoCreate and autoRemove are boolean switches that provide convenient automatic mediator management.
+
+<pre>//someplace in your application where mapping/configuration occurs
+mediatorMap.mapView(MyAwesomeWidget, MyAwesomeWidgetMediator); </pre>
+
+
+<pre>//somewhere inside of the contextView's display list
+var myAwesomeWidget:MyAwesomeWidget = new MyAwesomeWidget();
+this.addChild(myAwesomeWidget); //the ADDED_TO_STAGE event is dispatched, which triggers the view component to be mediated</pre>
+
+This approach utilizes the automated mediation. Manual mediation, and a more in-depth look at this process will be covered later in the "Mediators":#mediators section.
+
+<pre>mapModule(moduleClassName:String, localModuleClass:Class, mediatorClass:Class, autoCreate:Boolean = true, autoRemove:Boolean = true)</pre>
+
+_TODO:need to explore how modules work in more depth_

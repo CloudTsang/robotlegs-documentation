@@ -1,0 +1,76 @@
+h4(#mappingwithinjector). Injection Mapping with the Injector Class
+
+The adapters for concrete Injector classes conform to the IInjector interface. This interface provides a consistent API for injection, irrespective of the dependency injection solution provided. This document focuses on SwiftSuspenders, but this syntax is true for any Injector that conforms to the IInjector interface.
+
+Below are the four mapping methods that are provided with classes that implement IInjector:
+
+<pre>mapValue(whenAskedFor:Class, useValue:Object, named:String = null)</pre>
+
+*mapValue* is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
+
+<pre>//someplace in your application where mapping/configuration occurs
+var myClassInstance:MyClass = new MyClass();
+injector.mapValue(MyClass, myClassInstance);</pre>
+
+
+<pre>//in the class to receive injections
+[Inject]
+public var myClassInstance:MyClass</pre>
+
+The instance of MyClass is create and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request.
+
+<pre>mapClass(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
+
+*mapClass* provides a unique instance of the mapped class for each injection request.
+
+<pre>//someplace in your application where mapping/configuration occurs
+injector.mapValue(MyClass, MyClass);</pre>
+
+
+<pre>//in the first class to receive injections
+[Inject]
+public var myClassInstance:MyClass</pre>
+
+
+<pre>//in the second class to receive injections
+[Inject]
+public var myClassInstance:MyClass</pre>
+
+Each of the injections above will provide a _unique_ instance of MyClass to fulfill the request.
+
+<pre>mapSingleton(whenAskedFor:Class, named:String = null)</pre>
+
+*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
+
+<pre>//someplace in your application where mapping/configuration occurs
+injector.mapSingleton(MyClass);</pre>
+
+
+<pre>//in the first class to receive injections
+[Inject]
+public var myClassInstance:MyClass</pre>
+
+
+<pre>//in the second class to receive injections
+[Inject]
+public var myClassInstance:MyClass</pre>
+
+In the above example, both injections requests will be filled with the same instance of the requested class. This injection is deferred, meaning the object is not instantiated until it is first requested.
+
+<pre>mapSingletonOf(whenAskedFor:Class, useSingletonOf:Class, named:String = null)</pre>
+
+*mapSingletonOf* is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
+
+<pre>//someplace in your application where mapping/configuration occurs
+injector.mapSingletonOf(IMyClass, MyClass); //MyClass implements IMyClass</pre>
+
+<pre>//in the first class to receive injections
+[Inject]
+public var myClassInstance:IMyClass</pre>
+
+
+<pre>//in the second class to receive injections
+[Inject]
+public var myClassInstance:IMyClass</pre>
+
+This injection method is useful for creating classes that are more testable and can take advantage of polymorphism.
