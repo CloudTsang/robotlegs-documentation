@@ -9,12 +9,13 @@ h2. Table of Contents
 ### "Injection Mapping with the MediatorMap Class":#mappingwithmediatormap
 ### "Injection Mapping with the CommandMap Class":#mappingwithcommandmap
 ## "The Context":#thecontext
-# *"MVC+S Reference Implementation":#mvcs*
+# *"MVCS Reference Implementation":#mvcs*
 ## "Context":#context
-## "Model & Models":#modelandmodels
-## "View & Mediators":#viewandmediators
 ## "Controller & Commands":#controllersandcommands
-## "Service & Services":#serviceandservices
+## "View & Mediators":#viewandmediators
+## "Model, Service and the Actor":#modelandservice
+## "Model":#modelandmodels
+## "Service":#serviceandservices
 ## "Framework Events":#frameworkevents
 ## *"Commands":#commands*
 ### "Command Responsibilities":#commandresponsibilities
@@ -44,4 +45,3 @@ h2. Table of Contents
 ### "Mapping a Service":#mappingservice 
 ### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents 
 ### "Dispatching Framework Events":#servicedispatchingframeworkevents 
-## *"Unit Testing":#unittesting*
