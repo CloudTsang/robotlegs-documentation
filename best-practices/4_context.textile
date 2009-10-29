@@ -22,10 +22,10 @@ At the heart of any Robotlegs implementation lies the Context. The Context, or C
 			//This Context is mapping a single command to the ContextEvent.STARTUP
 			//The StartupCommand will map additional commands, mediators, services,
 			//and models for use in the application.
-			commandMap.mapEvent( StartupCommand, ContextEvent.STARTUP, ContextEvent, true );
+			commandMap.mapEvent( ContextEvent.STARTUP, StartupCommand, ContextEvent, true );
 						
 			//Start the Application (triggers the StartupCommand)
-			dispatchEvent(new ContextEvent(ContextEvent.STARTUP));
+			dispatch(new ContextEvent(ContextEvent.STARTUP));
 		}
 	}
 }</pre>

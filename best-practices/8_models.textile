@@ -31,9 +31,9 @@ It is important to note that when referring to a singleton above, it is not a Si
 
 h3(#dispatchingeventsfrommodel). Dispatching Events from a Model
 
-The Model class provides a convenience method _dispatchEvent_ for sending framework events:
+The Model class provides a convenience method _dispatch_ for sending framework events:
 
-<pre>dispatchEvent( new ImportantDataEvent(ImportantDataEvent.IMPORTANT_DATA_UPDATED))</pre>
+<pre>dispatch( new ImportantDataEvent(ImportantDataEvent.IMPORTANT_DATA_UPDATED))</pre>
 
 Events can be dispatched for any number of reasons, including but not limited to:
 

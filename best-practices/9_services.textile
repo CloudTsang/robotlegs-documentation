@@ -41,6 +41,6 @@ While this is technically possible it is *highly discouraged*. Don't do it. Just
 
 h3(#servicedispatchingframeworkevents). Dispatching Framework Events
 
-The Service class provides a convenience method _dispatchEvent_ for sending framework events:
+The Service class provides a convenience method _dispatch_ for sending framework events:
 
-<pre>dispatchEvent( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
+<pre>dispatch( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
