@@ -1,12 +1,12 @@
 h2(#models). Models
 
-[_this section is nowhere near complete_]
+A model class is used to manage access to an application's data model. A model provides an API that is used by other framework actors to access, manipulate, and update application data. This data includes, but is not limited to, native data types such as native data types such as String, Array, or ArrayCollection as well as domain specific Objects or collections of these.
 
-The Model class is used to manage access to an application's data model. A Model provides an API that is used by other framework actors to access, manipulate, and update application data. This data includes, but is not limited to, native data types such as native data types such as String, Array, or ArrayCollection as well as domain specific Objects or collections of these.
+Model are referred to as simply Model, as in UserModel, and at other times they might be referred to as Proxy as in UserProxy. In Robotlegs, both of these naming conventions are used for the same purpose. Providing an API for an applications data. Regardless of the naming convention models will extend the Actor base class which provides core framework dependencies as well as convenience helper methods your models can make use of. This document will refer to these classes as Model.
 
 h3(#modelresponsibilities). Model Responsibilities
 
-Concrete Model classes encapsulate and provide an API for the application data model. The Model class, as extended for application specific usage, is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly. 
+Concrete model classes encapsulate and provide an API for the application data model. The Model class, as extended for application specific usage, is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly. 
 
 In addition to controlling access to the data model, the Model is routinely used to perform operations on the data to keep the data in a valid state. This includes performing calculations on the data, or other areas of domain specific logic. This responsibility of the Model is extremely important. The Model is the tier of any given application with the highest potential for portability. By placing domain logic on the Model, future implementations of the model will not have to repeat this same logic as they would if it was placed in the View or Controller tiers.
 

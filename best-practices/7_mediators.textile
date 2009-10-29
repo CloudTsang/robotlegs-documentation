@@ -58,9 +58,9 @@ When a View Component is added to the stage within a Context's contextView, it i
 	override public function onRegister():void
 	{
 		//adding an event listener to the Context for framework events
-		addEventListenerTo( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
+		eventMap.mapListener( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
 		//adding an event listener to the view component being mediated
-		addEventListenerTo( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
+		eventMap.mapListener( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
 	}
 	
 	protected function handleDoStuff(event:MyCustomEvent):void
@@ -87,13 +87,13 @@ Event listeners are the eyes and ears of concrete Mediators. Since all communica
 
 It is common to add event listeners in the onRegister method of the Mediator. At this phase of the Mediator's lifecycle, it has been registered and its view component and other dependencies have been injected. The onRegister method must be overridden in concrete Mediator classes. Event listeners may be added in other methods as well, including event handler methods that are responding to both framework and view component events.
 
-Mediators are equipped with a convenience method, _addEventListenerTo_. This method registers each event added to the Mediator, and ensures that the event is removed when the mediator is unregistered from the framework. It is important to remove events in Flash, as events that are added, but not removed from a class eliminate the Player's ability to perform runtime Garbage Collection on that class. It is possible to add your event listeners with the traditional Flash syntax, but be aware that you will also need to remove them manually as well.
+Mediators are equipped with an EventMap that has a method mapListener(). This method registers each event added to the Mediator, and ensures that the event is removed when the mediator is unregistered from the framework. It is important to remove events in Flash, as events that are added, but not removed from a class eliminate the Player's ability to perform runtime Garbage Collection on that class. It is possible to add your event listeners with the traditional Flash syntax, but be aware that you will also need to remove them manually as well.
 
 h3(#mediatorslisteningfroframeworkevents). Listening for Framework Events
 
 All of the actors in the framework carry an _eventDispatcher_ property that is injected into the class when it has been instantiated. The _eventDispatcher_ is a Mediator's mechanism for sending and receiving framework events. 
 
-<pre>addEventListenerTo(eventDispatcher, SomeEvent.IT_IS_IMPORTANT, handleFrameworkEvent)</pre>
+<pre>eventMap.mapListener(eventDispatcher, SomeEvent.IT_IS_IMPORTANT, handleFrameworkEvent)</pre>
 
 Using this syntax, a Mediator is now listening for _SomeEvent.IT_IS_IMPORTANT_ which will be handled by a method called _handleFrameworkEvent_
 
@@ -107,9 +107,9 @@ This event can now be received by other Mediators or execute a command. The Medi
 
 h3(#mediatorslisteningforcomponentevents). Listening for View Component Events
 
-A Mediator is responsible for listening to events dispatched by the view component being mediated. This can be a single component, such as a TextField or Button, or a complex hierarchy of nested components. When a view component event has been added to a mediator it will be handled by the method designated to handle the event. As with framework events, the _addEventListenerTo_ convenience method is the preferred syntax for adding event listeners to a mediator:
+A Mediator is responsible for listening to events dispatched by the view component being mediated. This can be a single component, such as a TextField or Button, or a complex hierarchy of nested components. When a view component event has been added to a mediator it will be handled by the method designated to handle the event. As with framework events, the EventMap's mapListener method is the preferred syntax for adding event listeners to a mediator:
 
-<pre>addEventListenerTo(myMediatedViewComponent, SomeEvent.USER_DID_SOMETHING, handleUserDidSomethingEvent)</pre>
+<pre>eventMap.mapListener(myMediatedViewComponent, SomeEvent.USER_DID_SOMETHING, handleUserDidSomethingEvent)</pre>
 
 In response to an event received from a view component, a mediator might:
 

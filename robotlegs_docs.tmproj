@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>best-practices/5_mvcs_overview.textile</string>
+	<string>best-practices/3_2_injecting_via_MediatorMap.textile</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -43,6 +43,20 @@
 				<integer>472</integer>
 				<key>line</key>
 				<integer>6</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>best-practices/3_0_injection.textile</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>26</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -91,20 +105,6 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>best-practices/3_injection.textile</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>26</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>best-practices/4_context.textile</key>
 		<dict>
 			<key>caret</key>
@@ -124,14 +124,56 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>176</integer>
+				<integer>70</integer>
 				<key>line</key>
-				<integer>32</integer>
+				<integer>56</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>6</integer>
+			<integer>0</integer>
+		</dict>
+		<key>best-practices/6_commands.textile</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>37</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>140</integer>
+			<key>firstVisibleLine</key>
+			<integer>28</integer>
+		</dict>
+		<key>best-practices/7_mediators.textile</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>220</integer>
+				<key>line</key>
+				<integer>132</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>109</integer>
+		</dict>
+		<key>best-practices/8_models.textile</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>3</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 		<key>best-practices/_toc.textile</key>
 		<dict>
@@ -151,8 +193,11 @@
 	<key>openDocuments</key>
 	<array>
 		<string>best-practices/5_mvcs_overview.textile</string>
+		<string>best-practices/6_commands.textile</string>
+		<string>best-practices/7_mediators.textile</string>
+		<string>best-practices/8_models.textile</string>
+		<string>best-practices/3_0_injection.textile</string>
 		<string>best-practices/4_context.textile</string>
-		<string>best-practices/3_injection.textile</string>
 		<string>best-practices/3_1_injecting_with_the_injector.textile</string>
 		<string>best-practices/3_2_injecting_via_MediatorMap.textile</string>
 		<string>best-practices/3_3_injecting_with_CommandMap.textile</string>
@@ -171,10 +216,18 @@
 			<key>isExpanded</key>
 			<true/>
 			<key>subItems</key>
-			<dict/>
+			<dict>
+				<key>best-practices</key>
+				<dict>
+					<key>isExpanded</key>
+					<true/>
+					<key>subItems</key>
+					<dict/>
+				</dict>
+			</dict>
 		</dict>
 	</dict>
 	<key>windowFrame</key>
-	<string>{{431, 137}, {1404, 800}}</string>
+	<string>{{586, 400}, {1404, 778}}</string>
 </dict>
 </plist>
