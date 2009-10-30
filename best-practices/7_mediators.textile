@@ -124,9 +124,7 @@ To promote loose coupling your mediators can listen for system events that will 
 
 Directly accessing services through a mediator can provide convenience, without serious risk of coupling. A service is not storing data, simply providing an API for making requests to an external service and receiving the response. Being able to access this API directly can save your application from unnecessary command classes to achieve the same goal. If the service API is repeatedly accessed in the same way from many mediators, it can be beneficial to encapsulate this behavior in a command to keep the behavior consistent and reduce the repetition of injecting the service and accessing it directly in your mediators.
 
-In some cases it is appropriate to inject a reference to your application model(s) directly into your mediator. This provides convenient access to the data stored on the model. While reading data is a convenient mechanism in some cases, you are discouraged from writing directly to your model(s) within your mediators. Writing data back to the model from a mediator tightly couples the mediator to the model, as it is now doing work ON the model. The recommended practice for _writing_ data to the model is via a command. To enforce this the recommended practice is to create read-only interfaces for your model classes that you wish to inject into mediators. Utilizing interfaces that strictly define getters will allow for the convenience of accessing your data directly while enforcing best practices. In addition, this approach will allow you to easily replace your injected models with "stub classes":http://blog.springsource.com/2007/01/15/unit-testing-with-stubs-and-mocks/ for the purposes of unit testing.
-
-_%{color:red}this explanation really deserves a proper code example!%_
+It is recommended that models and services injected directly into mediators are done so via the interfaces the service and model classes implement. An example of this can be found in the "Example Service":#serviceexample section below.
 
 h3(#accessingothermediatorsfromamediator). Accessing Other Mediators
 

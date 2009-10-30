@@ -1,15 +1,14 @@
-
-<div align="center">!=http://joelhooks.com/wp-content/uploads/2009/07/robotlegssketchsmall.gif!</div>
+<div align="center">!=http://joelhooks.com/wp-content/uploads/2009/07/robotlegssketchsmall.gif!<p><strong>Documentation for Robotlegs v1.0RC1</strong></p></div>
 h2. Table of Contents
 
 # *"What is Robotlegs":#whatisrobotlegs*
-## "Dependency Injection":#dependencyinjection
-### "Using Injectors":#usingtheinjectors
-### "Injection Syntax for the SwiftSuspenders Adapter":#injectionsyntax
-### "Injection Mapping with the Injector Class":#mappingwithinjector
-### "Injection Mapping with the MediatorMap Class":#mappingwithmediatormap
-### "Injection Mapping with the CommandMap Class":#mappingwithcommandmap
-## "The Context":#thecontext
+# "Dependency Injection":#dependencyinjection
+# "Using Injectors":#usingtheinjectors
+** "Injection Syntax for the SwiftSuspenders Adapter":#injectionsyntax
+** "Injection Mapping with the Injector Class":#mappingwithinjector
+** "Injection Mapping with the MediatorMap Class":#mappingwithmediatormap
+** "Injection Mapping with the CommandMap Class":#mappingwithcommandmap
+# "The Context":#thecontext
 # *"MVCS Reference Implementation":#mvcs*
 ## "Context":#context
 ## "Controller & Commands":#controllersandcommands
@@ -20,7 +19,7 @@ h2. Table of Contents
 ## "Framework Events":#frameworkevents
 ## *"Commands":#commands*
 ### "Command Responsibilities":#commandresponsibilities
-### "Triggering Commands":#triggeringcommands
+### "Triggering Commands":#triggeringcommands 
 ### "Chaining Commands":#chainingcommands
 ### "Decoupling Application Tiers":#decouplingtiers
 ## *"Mediators":#mediators*
@@ -29,23 +28,27 @@ h2. Table of Contents
 ### "Automatic Mediation of View Components":#automaticmediation
 ### "Manually Mediation of View Components":#manualmediation
 ### "Mapping the Main Application (_contextView_) Mediator":#mappingthecontextview
-### "Accessing a Mediator's View Component":#accessingmediatorviewcomponent
-### "Adding Event Listeners to a Mediator":#addingeventlistenerstomediators
-### "Listening for Framework Events":#mediatorslisteningfroframeworkevents
-### "Dispatching Framework Events":#Mediatorsdispatchingframeworkevents
-### "Listening for View Component Events":#mediatorslisteningforcomponentevents
-### "Accessing Models and Services via a Mediator":#accessingmodelsandservicesfrommediators
-### "Accessing Other Mediators":#accessingothermediatorsfromamediator
+### "Accessing a Mediator's View Component":#accessingmediatorviewcomponent 
+### "Adding Event Listeners to a Mediator":#addingeventlistenerstomediators 
+### "Listening for Framework Events":#mediatorslisteningfroframeworkevents 
+### "Dispatching Framework Events":#Mediatorsdispatchingframeworkevents 
+### "Listening for View Component Events":#mediatorslisteningforcomponentevents 
+### "Accessing Models and Services via a Mediator":#accessingmodelsandservicesfrommediators 
+### "Accessing Other Mediators":#accessingothermediatorsfromamediator 
 ## *"Models":#models*
-### "Model Responsibilities":#modelresponsibilities
-### "Mapping a Model":#mappingamodel
-### "Dispatching Events from a Model":#dispatchingeventsfrommodel
-### "Listening for Framework Events in a Model":#listeningforeventsinmodel
+### "Model Responsibilities":#modelresponsibilities 
+### "Mapping a Model":#mappingamodel 
+### "Dispatching Events from a Model":#dispatchingeventsfrommodel 
+### "Listening for Framework Events in a Model":#listeningforeventsinmodel 
 ## *"Services":#services*
-### "Service Responsibilities":#serviceresponsibilities
-### "Mapping a Service":#mappingservice
-### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents
-### "Dispatching Framework Events":#servicedispatchingframeworkevents
+### "Service Responsibilities":#serviceresponsibilities 
+### "Mapping a Service":#mappingservice 
+### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents 
+### "Dispatching Framework Events":#servicedispatchingframeworkevents 
+### "Example Service":#serviceexample
+**** "Services Should Implement an Interface":#serviceimplementsinterface
+**** "Parsing Data in a Service":#parsingresultsinservice
+**** "Service Events":#serviceevents
 
 h2(#whatisrobotlegs). What is Robotlegs
 
@@ -135,7 +138,7 @@ Each of the injections above will provide a _unique_ instance of MyClass to fulf
 
 <pre>mapSingleton(whenAskedFor:Class, named:String = null)</pre>
 
-*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself.
+*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
 
 <pre>//someplace in your application where mapping/configuration occurs
 injector.mapSingleton(MyClass);</pre>
@@ -198,7 +201,7 @@ The CommandMap class implements ICommandMap, which provides one method for mappi
 
 <pre>mapEvent(eventType:String, commandClass:Class, eventClass:Class = null, oneshot:Boolean = false)</pre>
 
-You will provide the commandMap with a class to execute, the type of event that executes it, and optionally a strong typing for the event and a boolean switch if the command should be executed only a single time and then be unmapped.
+You will provide the commandMap with a class to execute, the type of event that executes it, and optionally a strong typing for the event and a boolean switch if the command should be executed only a single time and then be unmapped. 
 
 The strongly typed event class optional parameter is used as extra protection against the Flash platforms "magic string" event type system. This will prevent any conflict between events that might have the same String type, but are actually types of different event classes.
 
@@ -216,30 +219,30 @@ At the heart of any Robotlegs implementation lies the Context. The Context, or C
 
 <pre lang="actionscript">package org.robotlegs.examples.bootstrap
 {
-import flash.display.DisplayObjectContainer;
-
-import org.robotlegs.base.ContextEvent;
-import org.robotlegs.core.IContext;
-import org.robotlegs.mvcs.Context;
-
-public class ExampleContext extends Context implements IContext
-{
-public function UnionChatContext(contextView:DisplayObjectContainer)
-{
-super(contextView);
-}
-
-override public function startup():void
-{
-//This Context is mapping a single command to the ContextEvent.STARTUP
-//The StartupCommand will map additional commands, mediators, services,
-//and models for use in the application.
-commandMap.mapEvent( ContextEvent.STARTUP, StartupCommand, ContextEvent, true );
-
-//Start the Application (triggers the StartupCommand)
-dispatch(new ContextEvent(ContextEvent.STARTUP));
-}
-}
+	import flash.display.DisplayObjectContainer;
+	
+	import org.robotlegs.base.ContextEvent;
+	import org.robotlegs.core.IContext;
+	import org.robotlegs.mvcs.Context;
+	
+	public class ExampleContext extends Context implements IContext
+	{
+		public function UnionChatContext(contextView:DisplayObjectContainer)
+		{
+			super(contextView);
+		}
+		
+		override public function startup():void
+		{
+			//This Context is mapping a single command to the ContextEvent.STARTUP
+			//The StartupCommand will map additional commands, mediators, services,
+			//and models for use in the application.
+			commandMap.mapEvent( ContextEvent.STARTUP, StartupCommand, ContextEvent, true );
+						
+			//Start the Application (triggers the StartupCommand)
+			dispatch(new ContextEvent(ContextEvent.STARTUP));
+		}
+	}
 }</pre>
 
 h2(#mvcs). MVCS Reference Implementation
@@ -310,23 +313,23 @@ h3(#commandresponsibilities). Command Responsibilities
 
 Commands are registered to a Context via that Context's CommandMap. The CommandMap is available by default in Context and Command classes. Commands are registered to the Context with an Event type, the Command class to execute in response to the Event, and optionally the Event class and a one off setting for when a Command should be executed once, and then unregistered for future occurrences of an Event.
 
-h3(#triggeringcommands). Triggering Commands
+h3(#triggeringcommands). Triggering Commands 
 
 Commands are triggered by framework events dispatched by Mediators, Services, Models, and other Commands. Typically the Event that triggered the Command is injected into the Command giving the Command access to the Event's properties/payload:
 
 <pre>
 public class MyCommand extends Command
 {
-[Inject]
-public var event:MyCustomEvent;
-
-[Inject]
-public var model:MyModel;
-
-override public function execute():void
-{
-model.updateData( event.myCustomEventPayload )
-}
+	[Inject]
+	public var event:MyCustomEvent;
+	
+	[Inject]
+	public var model:MyModel;
+			
+	override public function execute():void
+	{
+		model.updateData( event.myCustomEventPayload )
+	}
 }
 </pre>
 
@@ -339,21 +342,21 @@ It is also possible to chain commands:
 <pre lang="actionscript">
 public class MyChainedCommand extends Command
 {
-[Inject]
-public var event:MyCustomEvent;
-
-[Inject]
-public var model:MyModel;
-
-override public function execute():void
-{
-model.updateData( event.myCustomEventPayload )
-
-//the UPDATED_WITH_NEW_STUFF event triggers a command and is also received by
-//a mediator to update a View Component, but only if a response is requested
-if(event.responseNeeded)
-dispatch( new MyCustomEvent( MyCustomEvent.UPDATED_WITH_NEW_STUFF, model.getCalculatedResponse() ) )
-}
+	[Inject]
+	public var event:MyCustomEvent;
+	
+	[Inject]
+	public var model:MyModel;
+			
+	override public function execute():void
+	{
+		model.updateData( event.myCustomEventPayload )
+		
+		//the UPDATED_WITH_NEW_STUFF event triggers a command and is also received by
+		//a mediator to update a View Component, but only if a response is requested
+		if(event.responseNeeded)
+		    dispatch( new MyCustomEvent( MyCustomEvent.UPDATED_WITH_NEW_STUFF, model.getCalculatedResponse() ) )
+	}
 }
 </pre>
 
@@ -408,8 +411,8 @@ It is a common pattern to map the contextView to a mediator. This is a special s
 
 <pre>override public function startup():void
 {
-mediatorMap.mapView(MediateApplicationExample, AppMediator);
-mediatorMap.createMediator(contextView);
+	mediatorMap.mapView(MediateApplicationExample, AppMediator);
+	mediatorMap.createMediator(contextView);
 }</pre>
 
 The _contextView_ is now fully mediated and can send and receive framework events.
@@ -420,36 +423,36 @@ When a View Component is added to the stage within a Context's contextView, it i
 
 <pre>public class GalleryLabelMediator extends Mediator implements IMediator
 {
-[Inject]
-public var myCustomComponent:MyCustomComponent;
-
-/**
-* overriding the onRegister method is a good chance to
-* add any system or View Component Events the Mediator
-* is interested in receiving.
-*/
-override public function onRegister():void
-{
-//adding an event listener to the Context for framework events
-eventMap.mapListener( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
-//adding an event listener to the view component being mediated
-eventMap.mapListener( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
-}
-
-protected function handleDoStuff(event:MyCustomEvent):void
-{
-//setting a property on the view component from the
-//strongly typed event payload. The view component
-//will likely manage its own state based on this
-//new data.
-myCustomComponent.aProperty = event.payload
-}
-
-protected function handleDidSomeStuff(event:MyCustomEvent):void
-{
-//relaying the event to the framework
-dispatch(event)
-}
+	[Inject]
+	public var myCustomComponent:MyCustomComponent;
+		
+	/**
+	* overriding the onRegister method is a good chance to
+	* add any system or View Component Events the Mediator
+	* is interested in receiving.
+	*/
+	override public function onRegister():void
+	{
+		//adding an event listener to the Context for framework events
+		eventMap.mapListener( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
+		//adding an event listener to the view component being mediated
+		eventMap.mapListener( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
+	}
+	
+	protected function handleDoStuff(event:MyCustomEvent):void
+	{
+		//setting a property on the view component from the
+		//strongly typed event payload. The view component
+		//will likely manage its own state based on this
+		//new data.
+		myCustomComponent.aProperty = event.payload
+	}
+	
+	protected function handleDidSomeStuff(event:MyCustomEvent):void
+	{
+		//relaying the event to the framework
+		dispatch(event)
+	}
 }</pre>
 
 Following this approach we now have easy direct access to the public properties and methods of the mediated view component.
@@ -464,7 +467,7 @@ Mediators are equipped with an EventMap that has a method mapListener(). This me
 
 h3(#mediatorslisteningfroframeworkevents). Listening for Framework Events
 
-All of the actors in the framework carry an _eventDispatcher_ property that is injected into the class when it has been instantiated. The _eventDispatcher_ is a Mediator's mechanism for sending and receiving framework events.
+All of the actors in the framework carry an _eventDispatcher_ property that is injected into the class when it has been instantiated. The _eventDispatcher_ is a Mediator's mechanism for sending and receiving framework events. 
 
 <pre>eventMap.mapListener(eventDispatcher, SomeEvent.IT_IS_IMPORTANT, handleFrameworkEvent)</pre>
 
@@ -497,9 +500,7 @@ To promote loose coupling your mediators can listen for system events that will 
 
 Directly accessing services through a mediator can provide convenience, without serious risk of coupling. A service is not storing data, simply providing an API for making requests to an external service and receiving the response. Being able to access this API directly can save your application from unnecessary command classes to achieve the same goal. If the service API is repeatedly accessed in the same way from many mediators, it can be beneficial to encapsulate this behavior in a command to keep the behavior consistent and reduce the repetition of injecting the service and accessing it directly in your mediators.
 
-In some cases it is appropriate to inject a reference to your application model(s) directly into your mediator. This provides convenient access to the data stored on the model. While reading data is a convenient mechanism in some cases, you are discouraged from writing directly to your model(s) within your mediators. Writing data back to the model from a mediator tightly couples the mediator to the model, as it is now doing work ON the model. The recommended practice for _writing_ data to the model is via a command. To enforce this the recommended practice is to create read-only interfaces for your model classes that you wish to inject into mediators. Utilizing interfaces that strictly define getters will allow for the convenience of accessing your data directly while enforcing best practices. In addition, this approach will allow you to easily replace your injected models with "stub classes":http://blog.springsource.com/2007/01/15/unit-testing-with-stubs-and-mocks/ for the purposes of unit testing.
-
-_%{color:red}this explanation really deserves a proper code example!%_
+It is recommended that models and services injected directly into mediators are done so via the interfaces the service and model classes implement. An example of this can be found in the "Example Service":#serviceexample section below.
 
 h3(#accessingothermediatorsfromamediator). Accessing Other Mediators
 
@@ -513,7 +514,7 @@ Model are referred to as simply Model, as in UserModel, and at other times they 
 
 h3(#modelresponsibilities). Model Responsibilities
 
-Concrete model classes encapsulate and provide an API for the application data model. The Model class, as extended for application specific usage, is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly.
+Model classes encapsulate and provide an API for the application data model. A Model class is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly. 
 
 In addition to controlling access to the data model, the Model is routinely used to perform operations on the data to keep the data in a valid state. This includes performing calculations on the data, or other areas of domain specific logic. This responsibility of the Model is extremely important. The Model is the tier of any given application with the highest potential for portability. By placing domain logic on the Model, future implementations of the model will not have to repeat this same logic as they would if it was placed in the View or Controller tiers.
 
@@ -556,15 +557,13 @@ While this is technically possible it is *highly discouraged*. Don't do it. Just
 
 h2(#services). Services
 
-[_this section is nowhere near complete_]
-
 Services are utilized to access resources outside of the scope of the application. This is including, but certainly not limited to:
 
 * web services
 * file system
 * data bases
 * RESTful APIs
-* other Flash application via localConnection
+* other Flash applications via localConnection
 
 Services encapsulate this interaction with external entities, and manage the results, faults, and other events that result from this interaction.
 
@@ -576,7 +575,7 @@ A Service class provides your application with an API for interacting with an ex
 
 h3(#mappingservice). Mapping a Service
 
-There are several methods available on the injector for mapping your Service classes for injection into your framework actors. In addition, these methods can be used for injecting virtually ANY class into your classes.
+There are "several methods available on the injector":#mappingwithinjector for mapping your Service classes for injection into your framework actors. In addition, these methods can be used for injecting virtually ANY class into your classes.
 
 To map an existing instance for injection that will be treated as a singleton, use the following syntax:
 <pre>injector.mapValue(MyServiceClass, myServiceClassInstance)</pre>
@@ -601,5 +600,197 @@ The Service class provides a convenience method _dispatch_ for sending framework
 
 <pre>dispatch( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
 
+h3(#serviceexample). Example Service
+
+The following is the Flickr service class from the "Image Gallery":http://github.com/robotlegs/robotlegs-demos-Bundle/tree/master/FlickrImageGallery/ demo. "The Flickr API AS3 Library":http://code.google.com/p/as3flickrlib/ does a lot of the low level heavy lifting needed to connect to Flickr. This example makes use of that and provides a simple abstraction for use within the scope of the example. 
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	import com.adobe.webapis.flickr.FlickrService;
+	import com.adobe.webapis.flickr.Photo;
+	import com.adobe.webapis.flickr.events.FlickrResultEvent;
+	import com.adobe.webapis.flickr.methodgroups.Photos;
+	import com.adobe.webapis.flickr.methodgroups.helpers.PhotoSearchParams;
+	
+	import org.robotlegs.demos.imagegallery.events.GalleryEvent;
+	import org.robotlegs.demos.imagegallery.models.vo.Gallery;
+	import org.robotlegs.demos.imagegallery.models.vo.GalleryImage;
+	import org.robotlegs.mvcs.Actor;
+
+    /**
+     *  This class utilizes the Flickr API provided by Adobe to connect
+     *  to Flickr and retrieve images. It initially loads the current top
+     *  "interestingness" photos. It also provides the ability to search
+     *  for a specific keyword.    
+     */
+	public class FlickrImageService extends Actor implements IGalleryImageService
+	{
+		private var service:FlickrService;
+		private var photos:Photos;
+		
+		protected static const FLICKR_API_KEY:String = "516ab798392cb79523691e6dd79005c2";
+		protected static const FLICKR_SECRET:String = "8f7e19a3ae7a25c9";
+		
+		public function FlickrImageService()
+		{
+			this.service = new FlickrService(FLICKR_API_KEY);
+		}
+		
+		public function get searchAvailable():Boolean
+		{
+			return true;
+		}
+				
+		public function loadGallery():void
+		{
+			service.addEventListener(FlickrResultEvent.INTERESTINGNESS_GET_LIST, handleSearchResult);
+			service.interestingness.getList(null,"",20)
+		}
+		
+		public function search(searchTerm:String):void
+		{
+			if(!this.photos)
+				this.photos = new Photos(this.service);
+			service.addEventListener(FlickrResultEvent.PHOTOS_SEARCH, handleSearchResult);
+			var p:PhotoSearchParams = new PhotoSearchParams()
+			p.text = searchTerm;
+			p.per_page = 20;
+			p.content_type = 1;
+			p.media = "photo"
+			p.sort = "date-posted-desc";
+			this.photos.searchWithParamHelper(p);				
+		}
+		
+		protected function handleSearchResult(event:FlickrResultEvent):void
+		{
+			this.processFlickrPhotoResults(event.data.photos.photos);
+		}
+		
+		protected function processFlickrPhotoResults(results:Array):void
+		{
+			var gallery:Gallery = new Gallery();
+						
+			for each(var flickrPhoto:Photo in results)
+			{
+				var photo:GalleryImage = new GalleryImage()
+				var baseURL:String = 'http://farm' + flickrPhoto.farmId + '.static.flickr.com/' + flickrPhoto.server + '/' + flickrPhoto.id + '_' + flickrPhoto.secret;
+				photo.thumbURL = baseURL + '_s.jpg';
+				photo.URL = baseURL + '.jpg';
+				gallery.photos.addItem( photo );
+			}
+			
+			dispatch(new GalleryEvent(GalleryEvent.GALLERY_LOADED, gallery));
+		}
+		
+	}
+}</pre>
+
+The FlickrGalleryService provides a very simple interface for connecting to a gallery service. The application can _loadGallery_, _search_, and find out if _searchAvailable_ is true or false. This interface is defined by the IGalleryService interface:
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	public interface IGalleryImageService
+	{
+		function loadGallery():void;
+		function search(searchTerm:String):void;
+		function get searchAvailable():Boolean;
+	}
+}</pre>
+
+h4(#serviceimplementsinterface). Services Should Implement an Interface
+
+By creating service classes that implement interfaces, it makes it trivial to switch them out at runtime for testing or providing access to additional services to the end users of the application. For example, the FlickrGalleryService can be easily substituted for an XMLGalleryService:
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	import mx.rpc.AsyncToken;
+	import mx.rpc.Responder;
+	import mx.rpc.http.HTTPService;
+	
+	import org.robotlegs.demos.imagegallery.events.GalleryEvent;
+	import org.robotlegs.demos.imagegallery.models.vo.Gallery;
+	import org.robotlegs.demos.imagegallery.models.vo.GalleryImage;
+	import org.robotlegs.mvcs.Actor;
+
+	public class XMLImageService extends Actor implements IGalleryImageService
+	{
+		protected static const BASE_URL:String = "assets/gallery/";
+		
+		public function XMLImageService()
+		{
+			super();
+		}
+
+		public function get searchAvailable():Boolean
+		{
+			return false;
+		}
+				
+		public function loadGallery():void
+		{
+			var service:HTTPService = new HTTPService();
+			var responder:Responder = new Responder(handleServiceResult, handleServiceFault);
+			var token:AsyncToken;
+			service.resultFormat = "e4x";
+			service.url = BASE_URL+"gallery.xml";
+			token = service.send();
+			token.addResponder(responder);
+		}
+		
+		public function search(searchTerm:String):void
+		{
+			trace("search is not available");
+		}
+		
+		protected function handleServiceResult(event:Object):void
+		{
+			var gallery:Gallery = new Gallery();
+						
+			for each(var image:XML in event.result.image)
+			{
+				var photo:GalleryImage = new GalleryImage()
+				photo.thumbURL = BASE_URL + "images/" + image.@name + '_s.jpg';
+				photo.URL = BASE_URL + "images/" + image.@name + '.jpg';
+				gallery.photos.addItem( photo );
+			}
+			
+			dispatchEvent(new GalleryEvent(GalleryEvent.GALLERY_LOADED, gallery));
+		}
+		
+		protected function handleServiceFault(event:Object):void
+		{
+			trace(event);
+		}
+	}
+}</pre>
+
+The XML gallery provides access to the same methods as the Flickr and can now be substituted where ever the IGalleryService interface is called for. The services dispatch the same events, and are practically indistinguishable in the final application. In this example, search was not implemented, but the search functionality could be easily implemented in this service as well.
+
+It is recommended that all services implement an interface that defines their API. In framework actors that receive a service as an injected dependency should ask for the interface, and not the concrete implementation:
+
+<pre>injector.mapSingletonOf(IGalleryService, FlickrGalleryService);</pre>
+
+<pre>[Inject]
+public var galleryService:IGalleryService</pre>
+
+You can easily replace the gallery service utilized by your classes by simply changing the injection:
+
+<pre>injector.mapSingletonOf(IGalleryService, XMLGalleryService);</pre>
+
+This approach can provide power, flexibility, and enhanced testability to an application.
+
+h4(#parsingresultsinservice). Parsing Data in a Service
+
+In the above example service classes or external services provide objects that are not representative of the application domain. The Flickr service provides strongly typed Photo objects and the XML service provides... xml. Both of these data types are perfectly usable, but do not necessarily fit into the context of our application. They are foreigners. The choice is between molding the application around these external data types, or preferably, convert these types into custom data types that are representative of the application. 
+
+There are two places where this manipulation/conversion should take place in the application. The Service or the Model would both be appropriate. The Service is the first point of entry for external data, and this fact makes it a better choice for manipulating the data returned by a service. The foreign data should be converted to the application domain at the first opportunity.
+
+_provide an example of using a factory class to produce the application domain objects instead of doing it in the service... proper_
+
+After the data has been converted to the objects specific to the application domain events are sent with strongly typed payloads to be immediately utilized by interested actors.
+
+h4(#serviceevents). Service Events
+
+The final corner of the service triad is the custom event. Without events, services are mute. Any work they might do will go unnoticed by the other application actors. A service will make use of custom events to provide itself with a voice to the broader application. Events to not have to be singular in purpose. If the service is transforming the data it can make use of a common event to dispatch strongly typed data to interested application actors.
 
 

@@ -1,14 +1,12 @@
 h2(#services). Services
 
-[_this section is nowhere near complete_]
-
 Services are utilized to access resources outside of the scope of the application. This is including, but certainly not limited to:
 
 * web services
 * file system
 * data bases
 * RESTful APIs
-* other Flash application via localConnection
+* other Flash applications via localConnection
 
 Services encapsulate this interaction with external entities, and manage the results, faults, and other events that result from this interaction.
 
@@ -20,7 +18,7 @@ A Service class provides your application with an API for interacting with an ex
 
 h3(#mappingservice). Mapping a Service
 
-There are several methods available on the injector for mapping your Service classes for injection into your framework actors. In addition, these methods can be used for injecting virtually ANY class into your classes.
+There are "several methods available on the injector":#mappingwithinjector for mapping your Service classes for injection into your framework actors. In addition, these methods can be used for injecting virtually ANY class into your classes.
 
 To map an existing instance for injection that will be treated as a singleton, use the following syntax:
 <pre>injector.mapValue(MyServiceClass, myServiceClassInstance)</pre>
@@ -44,4 +42,198 @@ h3(#servicedispatchingframeworkevents). Dispatching Framework Events
 The Service class provides a convenience method _dispatch_ for sending framework events:
 
 <pre>dispatch( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
+
+h3(#serviceexample). Example Service
+
+The following is the Flickr service class from the "Image Gallery":http://github.com/robotlegs/robotlegs-demos-Bundle/tree/master/FlickrImageGallery/ demo. "The Flickr API AS3 Library":http://code.google.com/p/as3flickrlib/ does a lot of the low level heavy lifting needed to connect to Flickr. This example makes use of that and provides a simple abstraction for use within the scope of the example. 
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	import com.adobe.webapis.flickr.FlickrService;
+	import com.adobe.webapis.flickr.Photo;
+	import com.adobe.webapis.flickr.events.FlickrResultEvent;
+	import com.adobe.webapis.flickr.methodgroups.Photos;
+	import com.adobe.webapis.flickr.methodgroups.helpers.PhotoSearchParams;
+	
+	import org.robotlegs.demos.imagegallery.events.GalleryEvent;
+	import org.robotlegs.demos.imagegallery.models.vo.Gallery;
+	import org.robotlegs.demos.imagegallery.models.vo.GalleryImage;
+	import org.robotlegs.mvcs.Actor;
+
+    /**
+     *  This class utilizes the Flickr API provided by Adobe to connect
+     *  to Flickr and retrieve images. It initially loads the current top
+     *  "interestingness" photos. It also provides the ability to search
+     *  for a specific keyword.    
+     */
+	public class FlickrImageService extends Actor implements IGalleryImageService
+	{
+		private var service:FlickrService;
+		private var photos:Photos;
+		
+		protected static const FLICKR_API_KEY:String = "516ab798392cb79523691e6dd79005c2";
+		protected static const FLICKR_SECRET:String = "8f7e19a3ae7a25c9";
+		
+		public function FlickrImageService()
+		{
+			this.service = new FlickrService(FLICKR_API_KEY);
+		}
+		
+		public function get searchAvailable():Boolean
+		{
+			return true;
+		}
+				
+		public function loadGallery():void
+		{
+			service.addEventListener(FlickrResultEvent.INTERESTINGNESS_GET_LIST, handleSearchResult);
+			service.interestingness.getList(null,"",20)
+		}
+		
+		public function search(searchTerm:String):void
+		{
+			if(!this.photos)
+				this.photos = new Photos(this.service);
+			service.addEventListener(FlickrResultEvent.PHOTOS_SEARCH, handleSearchResult);
+			var p:PhotoSearchParams = new PhotoSearchParams()
+			p.text = searchTerm;
+			p.per_page = 20;
+			p.content_type = 1;
+			p.media = "photo"
+			p.sort = "date-posted-desc";
+			this.photos.searchWithParamHelper(p);				
+		}
+		
+		protected function handleSearchResult(event:FlickrResultEvent):void
+		{
+			this.processFlickrPhotoResults(event.data.photos.photos);
+		}
+		
+		protected function processFlickrPhotoResults(results:Array):void
+		{
+			var gallery:Gallery = new Gallery();
+						
+			for each(var flickrPhoto:Photo in results)
+			{
+				var photo:GalleryImage = new GalleryImage()
+				var baseURL:String = 'http://farm' + flickrPhoto.farmId + '.static.flickr.com/' + flickrPhoto.server + '/' + flickrPhoto.id + '_' + flickrPhoto.secret;
+				photo.thumbURL = baseURL + '_s.jpg';
+				photo.URL = baseURL + '.jpg';
+				gallery.photos.addItem( photo );
+			}
+			
+			dispatch(new GalleryEvent(GalleryEvent.GALLERY_LOADED, gallery));
+		}
+		
+	}
+}</pre>
+
+The FlickrGalleryService provides a very simple interface for connecting to a gallery service. The application can _loadGallery_, _search_, and find out if _searchAvailable_ is true or false. This interface is defined by the IGalleryService interface:
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	public interface IGalleryImageService
+	{
+		function loadGallery():void;
+		function search(searchTerm:String):void;
+		function get searchAvailable():Boolean;
+	}
+}</pre>
+
+h4(#serviceimplementsinterface). Services Should Implement an Interface
+
+By creating service classes that implement interfaces, it makes it trivial to switch them out at runtime for testing or providing access to additional services to the end users of the application. For example, the FlickrGalleryService can be easily substituted for an XMLGalleryService:
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	import mx.rpc.AsyncToken;
+	import mx.rpc.Responder;
+	import mx.rpc.http.HTTPService;
+	
+	import org.robotlegs.demos.imagegallery.events.GalleryEvent;
+	import org.robotlegs.demos.imagegallery.models.vo.Gallery;
+	import org.robotlegs.demos.imagegallery.models.vo.GalleryImage;
+	import org.robotlegs.mvcs.Actor;
+
+	public class XMLImageService extends Actor implements IGalleryImageService
+	{
+		protected static const BASE_URL:String = "assets/gallery/";
+		
+		public function XMLImageService()
+		{
+			super();
+		}
+
+		public function get searchAvailable():Boolean
+		{
+			return false;
+		}
+				
+		public function loadGallery():void
+		{
+			var service:HTTPService = new HTTPService();
+			var responder:Responder = new Responder(handleServiceResult, handleServiceFault);
+			var token:AsyncToken;
+			service.resultFormat = "e4x";
+			service.url = BASE_URL+"gallery.xml";
+			token = service.send();
+			token.addResponder(responder);
+		}
+		
+		public function search(searchTerm:String):void
+		{
+			trace("search is not available");
+		}
+		
+		protected function handleServiceResult(event:Object):void
+		{
+			var gallery:Gallery = new Gallery();
+						
+			for each(var image:XML in event.result.image)
+			{
+				var photo:GalleryImage = new GalleryImage()
+				photo.thumbURL = BASE_URL + "images/" + image.@name + '_s.jpg';
+				photo.URL = BASE_URL + "images/" + image.@name + '.jpg';
+				gallery.photos.addItem( photo );
+			}
+			
+			dispatchEvent(new GalleryEvent(GalleryEvent.GALLERY_LOADED, gallery));
+		}
+		
+		protected function handleServiceFault(event:Object):void
+		{
+			trace(event);
+		}
+	}
+}</pre>
+
+The XML gallery provides access to the same methods as the Flickr and can now be substituted where ever the IGalleryService interface is called for. The services dispatch the same events, and are practically indistinguishable in the final application. In this example, search was not implemented, but the search functionality could be easily implemented in this service as well.
+
+It is recommended that all services implement an interface that defines their API. In framework actors that receive a service as an injected dependency should ask for the interface, and not the concrete implementation:
+
+<pre>injector.mapSingletonOf(IGalleryService, FlickrGalleryService);</pre>
+
+<pre>[Inject]
+public var galleryService:IGalleryService</pre>
+
+You can easily replace the gallery service utilized by your classes by simply changing the injection:
+
+<pre>injector.mapSingletonOf(IGalleryService, XMLGalleryService);</pre>
+
+This approach can provide power, flexibility, and enhanced testability to an application.
+
+h4(#parsingresultsinservice). Parsing Data in a Service
+
+In the above example service classes or external services provide objects that are not representative of the application domain. The Flickr service provides strongly typed Photo objects and the XML service provides... xml. Both of these data types are perfectly usable, but do not necessarily fit into the context of our application. They are foreigners. The choice is between molding the application around these external data types, or preferably, convert these types into custom data types that are representative of the application. 
+
+There are two places where this manipulation/conversion should take place in the application. The Service or the Model would both be appropriate. The Service is the first point of entry for external data, and this fact makes it a better choice for manipulating the data returned by a service. The foreign data should be converted to the application domain at the first opportunity.
+
+_provide an example of using a factory class to produce the application domain objects instead of doing it in the service... proper_
+
+After the data has been converted to the objects specific to the application domain events are sent with strongly typed payloads to be immediately utilized by interested actors.
+
+h4(#serviceevents). Service Events
+
+The final corner of the service triad is the custom event. Without events, services are mute. Any work they might do will go unnoticed by the other application actors. A service will make use of custom events to provide itself with a voice to the broader application. Events to not have to be singular in purpose. If the service is transforming the data it can make use of a common event to dispatch strongly typed data to interested application actors.
+
 
