@@ -131,3 +131,4 @@ _%{color:red}this explanation really deserves a proper code example!%_
 h3(#accessingothermediatorsfromamediator). Accessing Other Mediators
 
 As with Services and Models, it is possible to inject and access other Mediators in a Mediator. This practice is *highly discouraged* as the tight coupling can easily be avoided by communication through framework events.
+

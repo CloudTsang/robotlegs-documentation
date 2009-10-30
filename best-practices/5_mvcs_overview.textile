@@ -57,3 +57,4 @@ Robotlegs uses native flash events for communication between framework actors. C
 Events are sent from all framework actors: Mediators, Services, Models, and Commands. Mediators are the only actors that receive framework events. Commands are triggered in response to framework events. An event can be both received by a Mediator as well as trigger a command.
 
 Model and service classes should not listen for or respond to events. Doing so would tightly couple them to application specific logic and reduce the potential for portability and reuse.
+

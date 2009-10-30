@@ -1,3 +1,4 @@
+
 <div align="center">!=http://joelhooks.com/wp-content/uploads/2009/07/robotlegssketchsmall.gif!</div>
 h2. Table of Contents
 
@@ -19,7 +20,7 @@ h2. Table of Contents
 ## "Framework Events":#frameworkevents
 ## *"Commands":#commands*
 ### "Command Responsibilities":#commandresponsibilities
-### "Triggering Commands":#triggeringcommands 
+### "Triggering Commands":#triggeringcommands
 ### "Chaining Commands":#chainingcommands
 ### "Decoupling Application Tiers":#decouplingtiers
 ## *"Mediators":#mediators*
@@ -28,22 +29,22 @@ h2. Table of Contents
 ### "Automatic Mediation of View Components":#automaticmediation
 ### "Manually Mediation of View Components":#manualmediation
 ### "Mapping the Main Application (_contextView_) Mediator":#mappingthecontextview
-### "Accessing a Mediator's View Component":#accessingmediatorviewcomponent 
-### "Adding Event Listeners to a Mediator":#addingeventlistenerstomediators 
-### "Listening for Framework Events":#mediatorslisteningfroframeworkevents 
-### "Dispatching Framework Events":#Mediatorsdispatchingframeworkevents 
-### "Listening for View Component Events":#mediatorslisteningforcomponentevents 
-### "Accessing Models and Services via a Mediator":#accessingmodelsandservicesfrommediators 
-### "Accessing Other Mediators":#accessingothermediatorsfromamediator 
+### "Accessing a Mediator's View Component":#accessingmediatorviewcomponent
+### "Adding Event Listeners to a Mediator":#addingeventlistenerstomediators
+### "Listening for Framework Events":#mediatorslisteningfroframeworkevents
+### "Dispatching Framework Events":#Mediatorsdispatchingframeworkevents
+### "Listening for View Component Events":#mediatorslisteningforcomponentevents
+### "Accessing Models and Services via a Mediator":#accessingmodelsandservicesfrommediators
+### "Accessing Other Mediators":#accessingothermediatorsfromamediator
 ## *"Models":#models*
-### "Model Responsibilities":#modelresponsibilities 
-### "Mapping a Model":#mappingamodel 
-### "Dispatching Events from a Model":#dispatchingeventsfrommodel 
-### "Listening for Framework Events in a Model":#listeningforeventsinmodel 
+### "Model Responsibilities":#modelresponsibilities
+### "Mapping a Model":#mappingamodel
+### "Dispatching Events from a Model":#dispatchingeventsfrommodel
+### "Listening for Framework Events in a Model":#listeningforeventsinmodel
 ## *"Services":#services*
-### "Service Responsibilities":#serviceresponsibilities 
-### "Mapping a Service":#mappingservice 
-### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents 
+### "Service Responsibilities":#serviceresponsibilities
+### "Mapping a Service":#mappingservice
+### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents
 ### "Dispatching Framework Events":#servicedispatchingframeworkevents
 
 h2(#whatisrobotlegs). What is Robotlegs
@@ -88,6 +89,8 @@ h4(#mappingwithinjector). Injection Mapping with the Injector Class
 
 The adapters for concrete Injector classes conform to the IInjector interface. This interface provides a consistent API for injection, irrespective of the dependency injection solution provided. This document focuses on SwiftSuspenders, but this syntax is true for any Injector that conforms to the IInjector interface.
 
+The _injector_ is the workhorse of all of the dependency injection that happens in your application. It is used for injecting framework actors, but can also be used for any other injections that your application might need. This includes, but is not limited to RemoteObjects, HTTPServices, factory classes, or virtually ANY class/instance that you might need as dependencies for your your application objects.
+
 Below are the four mapping methods that are provided with classes that implement IInjector:
 
 <pre>mapValue(whenAskedFor:Class, useValue:Object, named:String = null)</pre>
@@ -106,6 +109,12 @@ public var myClassInstance:MyClass</pre>
 The instance of MyClass is create and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request.
 
 <pre>mapClass(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
+
+The instance of MyClass is created and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request. It is important to note that since you have manually created a class instance and mapped it with mapValue, the instance will not have it's dependencies injected automatically. You will need to inject the dependencies manually or via the injector:
+
+<pre>injector.injectInto(myClassInstance);</pre>
+
+This will provide the instance with its mapped injectable properties immediately.
 
 *mapClass* provides a unique instance of the mapped class for each injection request.
 
@@ -126,7 +135,7 @@ Each of the injections above will provide a _unique_ instance of MyClass to fulf
 
 <pre>mapSingleton(whenAskedFor:Class, named:String = null)</pre>
 
-*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
+*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself.
 
 <pre>//someplace in your application where mapping/configuration occurs
 injector.mapSingleton(MyClass);</pre>
@@ -189,7 +198,7 @@ The CommandMap class implements ICommandMap, which provides one method for mappi
 
 <pre>mapEvent(eventType:String, commandClass:Class, eventClass:Class = null, oneshot:Boolean = false)</pre>
 
-You will provide the commandMap with a class to execute, the type of event that executes it, and optionally a strong typing for the event and a boolean switch if the command should be executed only a single time and then be unmapped. 
+You will provide the commandMap with a class to execute, the type of event that executes it, and optionally a strong typing for the event and a boolean switch if the command should be executed only a single time and then be unmapped.
 
 The strongly typed event class optional parameter is used as extra protection against the Flash platforms "magic string" event type system. This will prevent any conflict between events that might have the same String type, but are actually types of different event classes.
 
@@ -207,30 +216,30 @@ At the heart of any Robotlegs implementation lies the Context. The Context, or C
 
 <pre lang="actionscript">package org.robotlegs.examples.bootstrap
 {
-	import flash.display.DisplayObjectContainer;
-	
-	import org.robotlegs.base.ContextEvent;
-	import org.robotlegs.core.IContext;
-	import org.robotlegs.mvcs.Context;
-	
-	public class ExampleContext extends Context implements IContext
-	{
-		public function UnionChatContext(contextView:DisplayObjectContainer)
-		{
-			super(contextView);
-		}
-		
-		override public function startup():void
-		{
-			//This Context is mapping a single command to the ContextEvent.STARTUP
-			//The StartupCommand will map additional commands, mediators, services,
-			//and models for use in the application.
-			commandMap.mapEvent( ContextEvent.STARTUP, StartupCommand, ContextEvent, true );
-						
-			//Start the Application (triggers the StartupCommand)
-			dispatch(new ContextEvent(ContextEvent.STARTUP));
-		}
-	}
+import flash.display.DisplayObjectContainer;
+
+import org.robotlegs.base.ContextEvent;
+import org.robotlegs.core.IContext;
+import org.robotlegs.mvcs.Context;
+
+public class ExampleContext extends Context implements IContext
+{
+public function UnionChatContext(contextView:DisplayObjectContainer)
+{
+super(contextView);
+}
+
+override public function startup():void
+{
+//This Context is mapping a single command to the ContextEvent.STARTUP
+//The StartupCommand will map additional commands, mediators, services,
+//and models for use in the application.
+commandMap.mapEvent( ContextEvent.STARTUP, StartupCommand, ContextEvent, true );
+
+//Start the Application (triggers the StartupCommand)
+dispatch(new ContextEvent(ContextEvent.STARTUP));
+}
+}
 }</pre>
 
 h2(#mvcs). MVCS Reference Implementation
@@ -301,23 +310,23 @@ h3(#commandresponsibilities). Command Responsibilities
 
 Commands are registered to a Context via that Context's CommandMap. The CommandMap is available by default in Context and Command classes. Commands are registered to the Context with an Event type, the Command class to execute in response to the Event, and optionally the Event class and a one off setting for when a Command should be executed once, and then unregistered for future occurrences of an Event.
 
-h3(#triggeringcommands). Triggering Commands 
+h3(#triggeringcommands). Triggering Commands
 
 Commands are triggered by framework events dispatched by Mediators, Services, Models, and other Commands. Typically the Event that triggered the Command is injected into the Command giving the Command access to the Event's properties/payload:
 
 <pre>
 public class MyCommand extends Command
 {
-	[Inject]
-	public var event:MyCustomEvent;
-	
-	[Inject]
-	public var model:MyModel;
-			
-	override public function execute():void
-	{
-		model.updateData( event.myCustomEventPayload )
-	}
+[Inject]
+public var event:MyCustomEvent;
+
+[Inject]
+public var model:MyModel;
+
+override public function execute():void
+{
+model.updateData( event.myCustomEventPayload )
+}
 }
 </pre>
 
@@ -330,21 +339,21 @@ It is also possible to chain commands:
 <pre lang="actionscript">
 public class MyChainedCommand extends Command
 {
-	[Inject]
-	public var event:MyCustomEvent;
-	
-	[Inject]
-	public var model:MyModel;
-			
-	override public function execute():void
-	{
-		model.updateData( event.myCustomEventPayload )
-		
-		//the UPDATED_WITH_NEW_STUFF event triggers a command and is also received by
-		//a mediator to update a View Component, but only if a response is requested
-		if(event.responseNeeded)
-		    dispatch( new MyCustomEvent( MyCustomEvent.UPDATED_WITH_NEW_STUFF, model.getCalculatedResponse() ) )
-	}
+[Inject]
+public var event:MyCustomEvent;
+
+[Inject]
+public var model:MyModel;
+
+override public function execute():void
+{
+model.updateData( event.myCustomEventPayload )
+
+//the UPDATED_WITH_NEW_STUFF event triggers a command and is also received by
+//a mediator to update a View Component, but only if a response is requested
+if(event.responseNeeded)
+dispatch( new MyCustomEvent( MyCustomEvent.UPDATED_WITH_NEW_STUFF, model.getCalculatedResponse() ) )
+}
 }
 </pre>
 
@@ -399,8 +408,8 @@ It is a common pattern to map the contextView to a mediator. This is a special s
 
 <pre>override public function startup():void
 {
-	mediatorMap.mapView(MediateApplicationExample, AppMediator);
-	mediatorMap.createMediator(contextView);
+mediatorMap.mapView(MediateApplicationExample, AppMediator);
+mediatorMap.createMediator(contextView);
 }</pre>
 
 The _contextView_ is now fully mediated and can send and receive framework events.
@@ -411,36 +420,36 @@ When a View Component is added to the stage within a Context's contextView, it i
 
 <pre>public class GalleryLabelMediator extends Mediator implements IMediator
 {
-	[Inject]
-	public var myCustomComponent:MyCustomComponent;
-		
-	/**
-	* overriding the onRegister method is a good chance to
-	* add any system or View Component Events the Mediator
-	* is interested in receiving.
-	*/
-	override public function onRegister():void
-	{
-		//adding an event listener to the Context for framework events
-		eventMap.mapListener( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
-		//adding an event listener to the view component being mediated
-		eventMap.mapListener( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
-	}
-	
-	protected function handleDoStuff(event:MyCustomEvent):void
-	{
-		//setting a property on the view component from the
-		//strongly typed event payload. The view component
-		//will likely manage its own state based on this
-		//new data.
-		myCustomComponent.aProperty = event.payload
-	}
-	
-	protected function handleDidSomeStuff(event:MyCustomEvent):void
-	{
-		//relaying the event to the framework
-		dispatch(event)
-	}
+[Inject]
+public var myCustomComponent:MyCustomComponent;
+
+/**
+* overriding the onRegister method is a good chance to
+* add any system or View Component Events the Mediator
+* is interested in receiving.
+*/
+override public function onRegister():void
+{
+//adding an event listener to the Context for framework events
+eventMap.mapListener( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
+//adding an event listener to the view component being mediated
+eventMap.mapListener( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
+}
+
+protected function handleDoStuff(event:MyCustomEvent):void
+{
+//setting a property on the view component from the
+//strongly typed event payload. The view component
+//will likely manage its own state based on this
+//new data.
+myCustomComponent.aProperty = event.payload
+}
+
+protected function handleDidSomeStuff(event:MyCustomEvent):void
+{
+//relaying the event to the framework
+dispatch(event)
+}
 }</pre>
 
 Following this approach we now have easy direct access to the public properties and methods of the mediated view component.
@@ -455,7 +464,7 @@ Mediators are equipped with an EventMap that has a method mapListener(). This me
 
 h3(#mediatorslisteningfroframeworkevents). Listening for Framework Events
 
-All of the actors in the framework carry an _eventDispatcher_ property that is injected into the class when it has been instantiated. The _eventDispatcher_ is a Mediator's mechanism for sending and receiving framework events. 
+All of the actors in the framework carry an _eventDispatcher_ property that is injected into the class when it has been instantiated. The _eventDispatcher_ is a Mediator's mechanism for sending and receiving framework events.
 
 <pre>eventMap.mapListener(eventDispatcher, SomeEvent.IT_IS_IMPORTANT, handleFrameworkEvent)</pre>
 
@@ -504,7 +513,7 @@ Model are referred to as simply Model, as in UserModel, and at other times they 
 
 h3(#modelresponsibilities). Model Responsibilities
 
-Concrete model classes encapsulate and provide an API for the application data model. The Model class, as extended for application specific usage, is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly. 
+Concrete model classes encapsulate and provide an API for the application data model. The Model class, as extended for application specific usage, is the gatekeeper for your application's data. Other actors in the application make requests for data through the API provided by the Model. As data is updated through the Model, the Model is equipped to broadcast events to the framework informing other actors of changes to the data model so they may adjust their state accordingly.
 
 In addition to controlling access to the data model, the Model is routinely used to perform operations on the data to keep the data in a valid state. This includes performing calculations on the data, or other areas of domain specific logic. This responsibility of the Model is extremely important. The Model is the tier of any given application with the highest potential for portability. By placing domain logic on the Model, future implementations of the model will not have to repeat this same logic as they would if it was placed in the View or Controller tiers.
 
@@ -591,3 +600,6 @@ h3(#servicedispatchingframeworkevents). Dispatching Framework Events
 The Service class provides a convenience method _dispatch_ for sending framework events:
 
 <pre>dispatch( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
+
+
+

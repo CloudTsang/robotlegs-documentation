@@ -19,3 +19,4 @@ This approach utilizes the automated mediation. Manual mediation, and a more in-
 <pre>mapModule(moduleClassName:String, localModuleClass:Class, mediatorClass:Class, autoCreate:Boolean = true, autoRemove:Boolean = true)</pre>
 
 _TODO:need to explore how modules work in more depth_
+

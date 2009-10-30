@@ -15,3 +15,4 @@ commandMap.mapEvent(MyAppDataEvent.DATA_WAS_RECEIVED, MyCoolCommand, MyAppDataEv
 <pre>//in another framework actor an event is dispatched
 //this triggers the mapped command which is subsequently executed
 dispatch(new MyAppDataEvent(MyAppDataEvent.DATA_WAS_RECEIVED, someTypedPayload))</pre>
+

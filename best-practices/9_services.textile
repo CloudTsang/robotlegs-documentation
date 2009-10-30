@@ -44,3 +44,4 @@ h3(#servicedispatchingframeworkevents). Dispatching Framework Events
 The Service class provides a convenience method _dispatch_ for sending framework events:
 
 <pre>dispatch( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
+

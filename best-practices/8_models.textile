@@ -46,3 +46,4 @@ Events can be dispatched for any number of reasons, including but not limited to
 h3(#listeningforeventsinmodel). Listening for Framework Events in a Model
 
 While this is technically possible it is *highly discouraged*. Don't do it. Just for the sake of clarity: *Don't do it*. If you do, don't say you weren't warned.
+

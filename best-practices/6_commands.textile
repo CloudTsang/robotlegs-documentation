@@ -66,3 +66,4 @@ To perform their duties, Commands may:
 * Be injected with Models, Services, and Mediators to perform work on directly
 
 bq(note). Something to note is that it is not recommended to interact directly with Mediators in a Command. While it is possible, it will couple that Mediator to that Command. Since Mediators, unlike Services and Models, are able to receive system Events, the better practice is to simply dispatch an Event from the Command and listen for it on Mediators that need to respond to the Events.
+

@@ -5,3 +5,4 @@ Robotlegs is a pure AS3 micro-architecture (framework) for developing Flash, Fle
 The framework supplies a default implementation based on the "Model-View-Controller":http://en.wikipedia.org/wiki/Model–view–controller meta-design pattern. This implementation provides a strong suggestion as to application structure and design. While it does make your application slightly less portable, it still aims to be as minimally invasive as possible in your concrete classes. By extending the "MVCS":#mvcs implementation classes, you are supplied with numerous methods and properties for the sake of convenience.
 
 You are never obligated to use the standard "MVCS":#mvcs implementation with Robotlegs. You can use any part of it, none of it, or freely roll your own implementation to suit your needs. It is included to provide a proper reference implementation and a jump start to using Robotlegs.
+

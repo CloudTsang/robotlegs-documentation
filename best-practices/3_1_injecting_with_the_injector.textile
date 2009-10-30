@@ -2,6 +2,8 @@ h4(#mappingwithinjector). Injection Mapping with the Injector Class
 
 The adapters for concrete Injector classes conform to the IInjector interface. This interface provides a consistent API for injection, irrespective of the dependency injection solution provided. This document focuses on SwiftSuspenders, but this syntax is true for any Injector that conforms to the IInjector interface.
 
+The _injector_ is the workhorse of all of the dependency injection that happens in your application. It is used for injecting framework actors, but can also be used for any other injections that your application might need. This includes, but is not limited to RemoteObjects, HTTPServices, factory classes, or virtually ANY class/instance that you might need as dependencies for your your application objects.
+
 Below are the four mapping methods that are provided with classes that implement IInjector:
 
 <pre>mapValue(whenAskedFor:Class, useValue:Object, named:String = null)</pre>
@@ -20,6 +22,12 @@ public var myClassInstance:MyClass</pre>
 The instance of MyClass is create and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request.
 
 <pre>mapClass(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
+
+The instance of MyClass is created and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request. It is important to note that since you have manually created a class instance and mapped it with mapValue, the instance will not have it's dependencies injected automatically. You will need to inject the dependencies manually or via the injector:
+
+<pre>injector.injectInto(myClassInstance);</pre>
+
+This will provide the instance with its mapped injectable properties immediately.
 
 *mapClass* provides a unique instance of the mapped class for each injection request.
 
@@ -74,3 +82,4 @@ public var myClassInstance:IMyClass</pre>
 public var myClassInstance:IMyClass</pre>
 
 This injection method is useful for creating classes that are more testable and can take advantage of polymorphism.
+

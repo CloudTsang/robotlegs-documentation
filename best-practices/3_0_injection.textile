@@ -20,7 +20,3 @@ public var myNamedDependency:NamedDepedency; //named injection</pre>
 
 Injection mappings are supplied to Robotlegs in three places. The MediatorMap, the CommandMap, and through the Injector directly. Both the MediatorMap and the CommandMap are making use of the Injector as well, but they are doing additional work required by these tiers. As the names imply, MediatorMap is used for mapping Mediators, CommandMap is used for mapping Commands, and anything else that needs to be injected (including but not limited to Models) is mapped directly with the Injector.
 
-
-
-
-
