@@ -1,4 +1,4 @@
-h4(#mappingwithinjector). Injection Mapping with the Injector Class
+h3(#mappingwithinjector). Injection Mapping with the Injector Class
 
 The adapters for concrete Injector classes conform to the IInjector interface. This interface provides a consistent API for injection, irrespective of the dependency injection solution provided. This document focuses on SwiftSuspenders, but this syntax is true for any Injector that conforms to the IInjector interface.
 
@@ -6,9 +6,9 @@ The _injector_ is the workhorse of all of the dependency injection that happens 
 
 Below are the four mapping methods that are provided with classes that implement IInjector:
 
-<pre>mapValue(whenAskedFor:Class, useValue:Object, named:String = null)</pre>
+h4. mapValue
 
-*mapValue* is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
+mapValue is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
 
 <pre>//someplace in your application where mapping/configuration occurs
 var myClassInstance:MyClass = new MyClass();
@@ -21,7 +21,7 @@ public var myClassInstance:MyClass</pre>
 
 The instance of MyClass is create and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request.
 
-<pre>mapClass(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
+<pre>mapValue(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
 
 The instance of MyClass is created and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request. It is important to note that since you have manually created a class instance and mapped it with mapValue, the instance will not have it's dependencies injected automatically. You will need to inject the dependencies manually or via the injector:
 
@@ -29,10 +29,12 @@ The instance of MyClass is created and is held waiting to be injected when reque
 
 This will provide the instance with its mapped injectable properties immediately.
 
-*mapClass* provides a unique instance of the mapped class for each injection request.
+h4. mapClass
+
+mapClass provides a _unique_ instance of the mapped class for each injection request.
 
 <pre>//someplace in your application where mapping/configuration occurs
-injector.mapValue(MyClass, MyClass);</pre>
+injector.mapClass(MyClass);</pre>
 
 
 <pre>//in the first class to receive injections
@@ -46,9 +48,18 @@ public var myClassInstance:MyClass</pre>
 
 Each of the injections above will provide a _unique_ instance of MyClass to fulfill the request.
 
-<pre>mapSingleton(whenAskedFor:Class, named:String = null)</pre>
+<pre>mapClass(whenAskedFor:Class, named:String = null)</pre>
 
-*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
+The injector provides a method for instantiating mapped objects:
+
+<pre>injector.mapClass(MyClass);
+var myClassInstance:MyClass = injector.instantiate(MyClass);</pre>
+
+This provides an instance of your object and all mapped injection points contained in the object are filled.
+
+h4. mapSingleton
+
+mapSingleton provides a _single_ instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
 
 <pre>//someplace in your application where mapping/configuration occurs
 injector.mapSingleton(MyClass);</pre>
@@ -63,11 +74,13 @@ public var myClassInstance:MyClass</pre>
 [Inject]
 public var myClassInstance:MyClass</pre>
 
-In the above example, both injections requests will be filled with the same instance of the requested class. This injection is deferred, meaning the object is not instantiated until it is first requested.
+In the above example, both injections requests will be filled with the same instance of the requested class. _This injection is deferred_, meaning the object is not instantiated until it is first requested.
 
 <pre>mapSingletonOf(whenAskedFor:Class, useSingletonOf:Class, named:String = null)</pre>
 
-*mapSingletonOf* is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
+h4. mapSingletonOf
+
+mapSingletonOf is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
 
 <pre>//someplace in your application where mapping/configuration occurs
 injector.mapSingletonOf(IMyClass, MyClass); //MyClass implements IMyClass</pre>
@@ -81,5 +94,5 @@ public var myClassInstance:IMyClass</pre>
 [Inject]
 public var myClassInstance:IMyClass</pre>
 
-This injection method is useful for creating classes that are more testable and can take advantage of polymorphism.
+This injection method is useful for creating classes that are more testable and can take advantage of polymorphism. An example of this can be found below in the "Example Service":#serviceimplementsinterface section.
 

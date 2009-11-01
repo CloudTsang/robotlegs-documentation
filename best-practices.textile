@@ -1,3 +1,4 @@
+
 <div align="center">!=http://joelhooks.com/wp-content/uploads/2009/07/robotlegssketchsmall.gif!<p><strong>Documentation for Robotlegs v1.0RC1</strong></p></div>
 h2. Table of Contents
 
@@ -50,6 +51,7 @@ h2. Table of Contents
 **** "Parsing Data in a Service":#parsingresultsinservice
 **** "Service Events":#serviceevents
 
+
 h2(#whatisrobotlegs). What is Robotlegs
 
 Robotlegs is a pure AS3 micro-architecture (framework) for developing Flash, Flex, and AIR applications. Robotlegs is narrowly focused on wiring application tiers together and providing a mechanism by which they communicate. Robotlegs seeks to speed up development while providing a time tested architectural solution to common development problems. Robotlegs is not interested in locking you into the framework, your classes are just that, your classes, and should be easily transferable to other frameworks should the need or desire to do so arise in the future.
@@ -58,6 +60,7 @@ The framework supplies a default implementation based on the "Model-View-Control
 
 You are never obligated to use the standard "MVCS":#mvcs implementation with Robotlegs. You can use any part of it, none of it, or freely roll your own implementation to suit your needs. It is included to provide a proper reference implementation and a jump start to using Robotlegs.
 
+
 h2(#dependencyinjection). Dependency Injection
 
 Robotlegs revolves around the "Dependency Injection":http://www.insideria.com/2009/09/as3-dependency-injection-demys.html design pattern.
@@ -65,6 +68,7 @@ Robotlegs revolves around the "Dependency Injection":http://www.insideria.com/20
 bq. At the simplest, Dependency Injection is that act of supplying objects with their instance variables or properties. When you pass a variable to the constructor of a class, you are using Dependency Injection. When you set a property on a class, you are using Dependency Injection. If you aren't coding your AS3 in a strictly procedural or linear fashion, the odds are that you are making use of Dependency Injection right now.
 
 Robotlegs uses automated, metadata based Dependency Injection. This is provided as a convenience for the developer and has the advantage of greatly reducing the amount of code needed to wire together an application and provide classes with their necessary dependencies. While it is fully possible to supply these dependencies to your classes manually, allowing the framework to perform these duties reduces the chances for error and generally speeds up the coding process.
+
 
 h2(#usingtheinjectors). Using Injectors
 
@@ -88,7 +92,8 @@ public var myNamedDependency:NamedDepedency; //named injection</pre>
 
 Injection mappings are supplied to Robotlegs in three places. The MediatorMap, the CommandMap, and through the Injector directly. Both the MediatorMap and the CommandMap are making use of the Injector as well, but they are doing additional work required by these tiers. As the names imply, MediatorMap is used for mapping Mediators, CommandMap is used for mapping Commands, and anything else that needs to be injected (including but not limited to Models) is mapped directly with the Injector.
 
-h4(#mappingwithinjector). Injection Mapping with the Injector Class
+
+h3(#mappingwithinjector). Injection Mapping with the Injector Class
 
 The adapters for concrete Injector classes conform to the IInjector interface. This interface provides a consistent API for injection, irrespective of the dependency injection solution provided. This document focuses on SwiftSuspenders, but this syntax is true for any Injector that conforms to the IInjector interface.
 
@@ -96,9 +101,9 @@ The _injector_ is the workhorse of all of the dependency injection that happens 
 
 Below are the four mapping methods that are provided with classes that implement IInjector:
 
-<pre>mapValue(whenAskedFor:Class, useValue:Object, named:String = null)</pre>
+h4. mapValue
 
-*mapValue* is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
+mapValue is used to map a specific instance of an object to an injector. When asked for a specific class, use this specific instance of the class for injection.
 
 <pre>//someplace in your application where mapping/configuration occurs
 var myClassInstance:MyClass = new MyClass();
@@ -111,7 +116,7 @@ public var myClassInstance:MyClass</pre>
 
 The instance of MyClass is create and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request.
 
-<pre>mapClass(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
+<pre>mapValue(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
 
 The instance of MyClass is created and is held waiting to be injected when requested. When it is requested, that instance is used to fill the injection request. It is important to note that since you have manually created a class instance and mapped it with mapValue, the instance will not have it's dependencies injected automatically. You will need to inject the dependencies manually or via the injector:
 
@@ -119,10 +124,12 @@ The instance of MyClass is created and is held waiting to be injected when reque
 
 This will provide the instance with its mapped injectable properties immediately.
 
-*mapClass* provides a unique instance of the mapped class for each injection request.
+h4. mapClass
+
+mapClass provides a _unique_ instance of the mapped class for each injection request.
 
 <pre>//someplace in your application where mapping/configuration occurs
-injector.mapValue(MyClass, MyClass);</pre>
+injector.mapClass(MyClass);</pre>
 
 
 <pre>//in the first class to receive injections
@@ -136,9 +143,18 @@ public var myClassInstance:MyClass</pre>
 
 Each of the injections above will provide a _unique_ instance of MyClass to fulfill the request.
 
-<pre>mapSingleton(whenAskedFor:Class, named:String = null)</pre>
+<pre>mapClass(whenAskedFor:Class, named:String = null)</pre>
 
-*mapSingleton* provides a single instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
+The injector provides a method for instantiating mapped objects:
+
+<pre>injector.mapClass(MyClass);
+var myClassInstance:MyClass = injector.instantiate(MyClass);</pre>
+
+This provides an instance of your object and all mapped injection points contained in the object are filled.
+
+h4. mapSingleton
+
+mapSingleton provides a _single_ instance of the requested class for every injection. Providing a single instance of a class across all injections ensures that you maintain a consistent state and don't create unnecessary instances of the injected class. This is a managed single instance, enforced by the framework, and not a Singleton enforced within the class itself. 
 
 <pre>//someplace in your application where mapping/configuration occurs
 injector.mapSingleton(MyClass);</pre>
@@ -153,11 +169,13 @@ public var myClassInstance:MyClass</pre>
 [Inject]
 public var myClassInstance:MyClass</pre>
 
-In the above example, both injections requests will be filled with the same instance of the requested class. This injection is deferred, meaning the object is not instantiated until it is first requested.
+In the above example, both injections requests will be filled with the same instance of the requested class. _This injection is deferred_, meaning the object is not instantiated until it is first requested.
 
 <pre>mapSingletonOf(whenAskedFor:Class, useSingletonOf:Class, named:String = null)</pre>
 
-*mapSingletonOf* is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
+h4. mapSingletonOf
+
+mapSingletonOf is much like mapSingleton in functionality. It is useful for mapping abstract classes and interfaces, where mapSingleton is for mapping concrete class implementations.
 
 <pre>//someplace in your application where mapping/configuration occurs
 injector.mapSingletonOf(IMyClass, MyClass); //MyClass implements IMyClass</pre>
@@ -171,19 +189,19 @@ public var myClassInstance:IMyClass</pre>
 [Inject]
 public var myClassInstance:IMyClass</pre>
 
-This injection method is useful for creating classes that are more testable and can take advantage of polymorphism.
+This injection method is useful for creating classes that are more testable and can take advantage of polymorphism. An example of this can be found below in the "Example Service":#serviceimplementsinterface section.
 
-h4(#mappingwithmediatormap). Injection Mapping with the MediatorMap Class
+
+h3(#mappingwithmediatormap). Injection Mapping with the MediatorMap Class
 
 The MediatorMap class implements IMediatorMap, which provides two methods for mapping your mediators to views and registering them for injection.
 
-<pre>mapView(viewClassOrName:*, mediatorClass:Class, autoCreate:Boolean = true, autoRemove:Boolean = true)</pre>
+<pre>mapView(viewClassOrName:*, mediatorClass:Class, injectViewAs:Class = null, autoCreate:Boolean = true, autoRemove:Boolean = true):void</pre>
 
-*mapView* accepts a view class, MyAwesomeWidget, or a fully qualified class name for a view, _com.me.app.view.components::MyAwesomeWidget_ as the first parameter. The second parameter is the Mediator class that will mediate the view component. The two additional parameters autoCreate and autoRemove are boolean switches that provide convenient automatic mediator management.
+*mapView* accepts a view class, MyAwesomeWidget, or a fully qualified class name for a view, _com.me.app.view.components::MyAwesomeWidget_ as the first parameter. The second parameter is the Mediator class that will mediate the view component. *[NEED TO PUT IN injectAsView]* The last two parameters autoCreate and autoRemove are boolean switches that provide convenient automatic mediator management.
 
 <pre>//someplace in your application where mapping/configuration occurs
 mediatorMap.mapView(MyAwesomeWidget, MyAwesomeWidgetMediator); </pre>
-
 
 <pre>//somewhere inside of the contextView's display list
 var myAwesomeWidget:MyAwesomeWidget = new MyAwesomeWidget();
@@ -191,11 +209,9 @@ this.addChild(myAwesomeWidget); //the ADDED_TO_STAGE event is dispatched, which 
 
 This approach utilizes the automated mediation. Manual mediation, and a more in-depth look at this process will be covered later in the "Mediators":#mediators section.
 
-<pre>mapModule(moduleClassName:String, localModuleClass:Class, mediatorClass:Class, autoCreate:Boolean = true, autoRemove:Boolean = true)</pre>
 
-_TODO:need to explore how modules work in more depth_
 
-h4(#mappingwithcommandmap). Injection Mapping with the CommandMap Class
+h3(#mappingwithcommandmap). Injection Mapping with the CommandMap Class
 
 The CommandMap class implements ICommandMap, which provides one method for mapping commands to framework events that trigger them.
 
@@ -212,6 +228,7 @@ commandMap.mapEvent(MyAppDataEvent.DATA_WAS_RECEIVED, MyCoolCommand, MyAppDataEv
 <pre>//in another framework actor an event is dispatched
 //this triggers the mapped command which is subsequently executed
 dispatch(new MyAppDataEvent(MyAppDataEvent.DATA_WAS_RECEIVED, someTypedPayload))</pre>
+
 
 h2(#thecontext). The Context
 
@@ -244,6 +261,7 @@ At the heart of any Robotlegs implementation lies the Context. The Context, or C
 		}
 	}
 }</pre>
+
 
 h2(#mvcs). MVCS Reference Implementation
 
@@ -304,6 +322,7 @@ Robotlegs uses native flash events for communication between framework actors. C
 Events are sent from all framework actors: Mediators, Services, Models, and Commands. Mediators are the only actors that receive framework events. Commands are triggered in response to framework events. An event can be both received by a Mediator as well as trigger a command.
 
 Model and service classes should not listen for or respond to events. Doing so would tightly couple them to application specific logic and reduce the potential for portability and reuse.
+
 
 h2(#commands). Commands
 
@@ -373,6 +392,7 @@ To perform their duties, Commands may:
 * Be injected with Models, Services, and Mediators to perform work on directly
 
 bq(note). Something to note is that it is not recommended to interact directly with Mediators in a Command. While it is possible, it will couple that Mediator to that Command. Since Mediators, unlike Services and Models, are able to receive system Events, the better practice is to simply dispatch an Event from the Command and listen for it on Mediators that need to respond to the Events.
+
 
 h2(#mediators). Mediators
 
@@ -506,6 +526,7 @@ h3(#accessingothermediatorsfromamediator). Accessing Other Mediators
 
 As with Services and Models, it is possible to inject and access other Mediators in a Mediator. This practice is *highly discouraged* as the tight coupling can easily be avoided by communication through framework events.
 
+
 h2(#models). Models
 
 A model class is used to manage access to an application's data model. A model provides an API that is used by other framework actors to access, manipulate, and update application data. This data includes, but is not limited to, native data types such as native data types such as String, Array, or ArrayCollection as well as domain specific Objects or collections of these.
@@ -554,6 +575,7 @@ Events can be dispatched for any number of reasons, including but not limited to
 h3(#listeningforeventsinmodel). Listening for Framework Events in a Model
 
 While this is technically possible it is *highly discouraged*. Don't do it. Just for the sake of clarity: *Don't do it*. If you do, don't say you weren't warned.
+
 
 h2(#services). Services
 
