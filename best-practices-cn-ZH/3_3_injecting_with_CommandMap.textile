@@ -1,0 +1,18 @@
+h3(#mappingwithcommandmap). CommandMap类的依赖注入
+
+CommandMap类实现ICommandMap接口, 提供一个用来映射commands到触发它们的框架事件的方法.
+
+<pre>mapEvent(eventType:String, commandClass:Class, eventClass:Class = null, oneshot:Boolean = false)</pre>
+
+你要提供给commandMap一个可以执行的类, 执行它的事件类型, 可选的这个事件的强类型, 以及这个command是否只被执行一次并且随即取消映射的布尔值开关.
+
+这个可选的强类型事件类用来对Flash平台的"magic string"事件类型系统做额外的保护.以避免不同事件类采用相同事件类型字符串的冲突.
+
+<pre>//在你的程序里某个映射/配置发生的地方
+commandMap.mapEvent(MyAppDataEvent.DATA_WAS_RECEIVED, MyCoolCommand, MyAppDataEvent); </pre>
+
+
+<pre>//在事件被广播的另外一个框架actor里
+//这触发了随后被执行的被映射的command
+dispatch(new MyAppDataEvent(MyAppDataEvent.DATA_WAS_RECEIVED, someTypedPayload))</pre>
+
