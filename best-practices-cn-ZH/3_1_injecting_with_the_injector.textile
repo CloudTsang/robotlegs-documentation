@@ -14,12 +14,9 @@ mapValue用来映射一个对象的特定实例到一个injector. 当请求一�
 var myClassInstance:MyClass = new MyClass();
 injector.mapValue(MyClass, myClassInstance);</pre>
 
-
 <pre>//在接收注入的类中
 [Inject]
 public var myClassInstance:MyClass</pre>
-
-MyClass的实例被创建和保留，等待在被请求的时候被注入.  当它被请求的时候，那个实例被用来满足这个注入请求.
 
 <pre>mapValue(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
 
