@@ -1,0 +1,60 @@
+h2(#mvcs). MVCS参考实现
+
+Robotlegs由一个参考实现装备. 这个实现遵照经典的Model-View-Controller (MVC)元设计模式, 另外增加了第四个叫做Service的actor. 这些层在本文档中通称为"核心actor", 或者简称为"actor".
+
+MVCS提供一个应用程序的框架概况. 通过将几个经过时间检验的设计模式整合到一个具体实现, Robotlegs的MVCS实现可以用做创建你的应用程序的一致方案. 通过这些架构概念着手一个应用程序, 你甚至可以在开始你的设计之前避免很多常见的障碍:
+
+* 分离
+* 组织
+* 解耦
+
+h4. 分离
+
+MVCS提供一种将你的应用程序分离到提供特定功能的无关联的层的很自然的方法. view层处理用户交互. model层处理用户创建的或从外部获取的数据. controller提供一种封装各层之间复杂交互的机制. 最后, service层提供一种和外界(比如远程服务API或文件系统)交互的独立机制.
+
+h4. 组织
+
+通过这种分离我们自然获得一个组织水平. 每个项目都需要某个组织水平. 是的, 有人可以把他们所有的类都扔到顶级包下完事, 但即使是最小的项目这也是不可接受的. 当一个项目有了一定的规模就需要开始组织类文件的结构了. 当增加团队成员到同一个应用程序开发中的时候问题就更加严重了. RobotLegs的MVCS实现为项目描绘出一个分为四层的优雅的组织结构.
+
+h4. 解耦
+
+Robotlegs的MVCS实现将应用程序解耦为4层. 每层都与其它层隔离, 使分离类和组件分别测试变得非常容易. 除了简化测试进程, 也通常使类更具便携性以在其它项目中使用. 比如, 一个连接到远程API的Service类可能在多个项目中都很有用. 通过解耦这个类, 它可以不需重构便从一个项目转移到另一个中使用.
+
+这个默认实现打算充当最佳实践建议的一个例子. Robotlegs并不打算以任何方式束缚你到这个例子, 它只是作为一个建议而提供. 你可以随意开发自己的实现来适应你喜欢的命名规范和开发需求. 如果这正是你所追求的, 请一定告诉我们, 因为我们一直对新方案很感兴趣, 而且它有可能可以作为一种替代实现包含到RobotLegs的代码仓库中.
+
+h3(#context). Context
+
+像RobotLegs中的其它实现一样, MVCS实现也是围绕一个或多个Context. 这个context提供一个事件中心公车并且处理自己的启动和关闭. A context defines scope. Framework actors live within a context and communicate with one another within the scope of that context. It is possible to have several contexts within a single application. This is useful for applications that want to load external modules. While the actors within a context can only communicate within the scope of their context, it is possible for contexts to communicate with one another in a modular application.
+
+Modular programming will not be covered by this document. All references to the Context within this document will be concerned with an application with a single context.
+
+h3(#controllersandcommands). Controller & Commands
+
+The Controller tier is represented by the Command class. Commands are stateless, short-lived objects used to perform a single unit of work within an application. Commands are appropriate for communication between application tiers and are able to send system events that will either launch other Commands or be received by a Mediator to perform work on a View Component in response to the event. Commands are an excellent place to encapsulate the business logic of your application.
+
+h3(#viewandmediators). View & Mediators
+
+The View tier is represented by the Mediator class. Classes that extend Mediator are used to handle framework interaction with View Components. A Mediator will listen for framework events, add event listeners to the View Components, and send framework events in response to events received from the View Components they are responsible for. This allows the developer to put application specific logic on the Mediator, and avoid coupling View components to specific applications.
+
+h3(#modelandservice). Model, Service and the Actor
+
+Conceptually there are many similarities between the service and model tiers in the MVCS architecture. Because of this similarity, models and services are extended from the same base Actor class. A class that extends the Actor base can serve many functions within your application architecture. Within the context of MVCS, we are going to utilize extensions of Actor for defining both the models and the services an application will need to manage data and communicate with external entities. This document will refer to the model and service classes as Model and Service respectively.
+
+For clarification, this document refers to "framework actors" and "actors" in reference to all of the classes representing the four tiers of an application. This is not to be confused with the MVCS class named Actor, which is extended only by the Model and Service classes to be used in the examples contained here.
+
+h4(#modelandmodels). Model
+
+Model classes for use in the model tier encapsulate and provide an API for data. Models send event notifications when work has been performed on the data model. Models are generally highly portable entities.
+
+h4(#serviceandservices). Service
+
+A Service for use in the service tier communicates with "the outside world" from within an application. Web services, file access, or any action that takes place outside of the scope of your application is appropriate for a service class. Service classes dispatch system events in response to external events. A service should be highly portable, encapsulating interaction with an external service.
+
+h3(#frameworkevents). Framework Events
+
+Robotlegs uses native flash events for communication between framework actors. Custom events are typically utilized for this purpose, it is however possible to use existing Flash events for this same purpose. Robotlegs does not support Event bubbling, as it does not depend on the Flash display list as an event bus. Utilizing custom events allows developers to add properties to the Event that can be used as strongly typed payloads for system events between framework actors.
+
+Events are sent from all framework actors: Mediators, Services, Models, and Commands. Mediators are the only actors that receive framework events. Commands are triggered in response to framework events. An event can be both received by a Mediator as well as trigger a command.
+
+Model and service classes should not listen for or respond to events. Doing so would tightly couple them to application specific logic and reduce the potential for portability and reuse.
+
