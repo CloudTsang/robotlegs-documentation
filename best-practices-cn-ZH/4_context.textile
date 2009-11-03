@@ -1,0 +1,32 @@
+h2(#thecontext). The Context
+
+Context是所有Robotlegs具体实现的中心. Context, 或者也许多个Contexts, 提供其它层进行通讯的机制. 一个应用程序并非只能使用一个Context, 但大多情况下一个Context就足够了. 如果有能力在Flash平台上创建模块化应用程序, 多个Context就是必须的了. Context在一个应用程序里有三个功能: 提供初始化, *[de-initialization]*, 和用来通讯的事件中心公车(central event bus).
+
+<pre lang="actionscript">package org.robotlegs.examples.bootstrap
+{
+	import flash.display.DisplayObjectContainer;
+	
+	import org.robotlegs.base.ContextEvent;
+	import org.robotlegs.core.IContext;
+	import org.robotlegs.mvcs.Context;
+	
+	public class ExampleContext extends Context implements IContext
+	{
+		public function UnionChatContext(contextView:DisplayObjectContainer)
+		{
+			super(contextView);
+		}
+		
+		override public function startup():void
+		{
+			//这个Context只映射一个command到ContextEvent.STARTUP事件. 
+			//这个StartupCommand将映射其它将在应用程序里使用的的commands, mediators, services,
+			//和 models.
+			commandMap.mapEvent( ContextEvent.STARTUP, StartupCommand, ContextEvent, true );
+						
+			//启动应用程序 (触发StartupCommand)
+			dispatch(new ContextEvent(ContextEvent.STARTUP));
+		}
+	}
+}</pre>
+
