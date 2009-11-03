@@ -4,15 +4,15 @@ MediatorMap实现IMediatorMap接口. IMediatorMap提供两个方法来映射你�
 
 <pre>mapView(viewClassOrName:*, mediatorClass:Class, injectViewAs:Class = null, autoCreate:Boolean = true, autoRemove:Boolean = true):void</pre>
 
-*mapView* 接受一个视图类, MyAwesomeWidget, 或者一个视图的类全名, _com.me.app.view.components::MyAwesomeWidget_ 作为第一个参数. 第二个参数是将要作为视图组件中介的Mediator类. *[需要放入 injectAsView]* The last two parameters autoCreate and autoRemove are boolean switches that provide convenient automatic mediator management.
+*mapView* 接受一个视图类, MyAwesomeWidget, 或者一个视图的类全名, _com.me.app.view.components::MyAwesomeWidget_ 作为第一个参数. 第二个参数是将要作为视图组件中介的Mediator类. *[需要放入 injectAsView]* 最后的两个参数autoCreate和autoRemove是两个用来提供方便的mediator自动管理的布尔值开关.
 
-<pre>//someplace in your application where mapping/configuration occurs
+<pre>//在你的程序里某个映射/配置发生的地方
 mediatorMap.mapView(MyAwesomeWidget, MyAwesomeWidgetMediator); </pre>
 
-<pre>//somewhere inside of the contextView's display list
+<pre>//在conntextView的显示列表里的某个地方
 var myAwesomeWidget:MyAwesomeWidget = new MyAwesomeWidget();
-this.addChild(myAwesomeWidget); //the ADDED_TO_STAGE event is dispatched, which triggers the view component to be mediated</pre>
+this.addChild(myAwesomeWidget); // ADDED_TO_STAGE 事件被抛出, 触发这个视图组件的中介机制</pre>
 
-This approach utilizes the automated mediation. Manual mediation, and a more in-depth look at this process will be covered later in the "Mediators":#mediators section.
+这个方法使用了自动中介机制. 手动中介，以及对此方面更深入的内容将稍后在 "Mediators":#mediators 章节中介绍.
 
 
