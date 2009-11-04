@@ -24,37 +24,37 @@ Robotlegs的MVCS实现将应用程序解耦为4层. 每层都与其它层隔离,
 
 h3(#context). Context
 
-像RobotLegs中的其它实现一样, MVCS实现也是围绕一个或多个Context. 这个context提供一个事件中心公车并且处理自己的启动和关闭. A context defines scope. Framework actors live within a context and communicate with one another within the scope of that context. It is possible to have several contexts within a single application. This is useful for applications that want to load external modules. While the actors within a context can only communicate within the scope of their context, it is possible for contexts to communicate with one another in a modular application.
+像RobotLegs中的其它实现一样, MVCS实现也是围绕一个或多个Context. 这个context提供一个中心的event bus并且处理自己的启动和关闭. 一个context定义了一个范围. 框架actor们处在context之内，并且在context定义的范围之内进行相互间的通讯. 一个应用程序是可以有多个context的. 这对想要加载外部模块的应用程序很有用. 因为在一个context里的actor只能在他们的context定义的范围之内相互通讯, 所以在一个模块化的应用程序里, 不同context之间的通讯是完全可能的.
 
-Modular programming will not be covered by this document. All references to the Context within this document will be concerned with an application with a single context.
+本文档不讨论模块化编程的内容. 之后本文档内所有提到的Context都指在一个应用程序里的单一的context.
 
 h3(#controllersandcommands). Controller & Commands
 
-The Controller tier is represented by the Command class. Commands are stateless, short-lived objects used to perform a single unit of work within an application. Commands are appropriate for communication between application tiers and are able to send system events that will either launch other Commands or be received by a Mediator to perform work on a View Component in response to the event. Commands are an excellent place to encapsulate the business logic of your application.
+Controller层由Command类体现. Commands是用来执行应用程序单一单位工作的, 无状态的, 短生命周期的对象. Command用于应用程序各层之间相互通讯， 也可能用来发送系统事件. 这些系统事件既可能发动其它的Command, 也可能被一个Mediator接收,然后对一个View Component进行对应这个事件的工作. Command是封装你的应用程序业务逻辑的绝佳场所.
 
 h3(#viewandmediators). View & Mediators
 
-The View tier is represented by the Mediator class. Classes that extend Mediator are used to handle framework interaction with View Components. A Mediator will listen for framework events, add event listeners to the View Components, and send framework events in response to events received from the View Components they are responsible for. This allows the developer to put application specific logic on the Mediator, and avoid coupling View components to specific applications.
+View由Mediator类体现. 继承Mediator的类用来处理框架和View Component之间的交互. 一个Mediator将会监听框架事件和View Component事件, 并在处理所负责的View Component发出的事件时发送框架事件. 这样开发者可以将应用程序特有的逻辑放到Mediator, 而避免把View Component耦合到特定的应用程序.
 
 h3(#modelandservice). Model, Service and the Actor
 
-Conceptually there are many similarities between the service and model tiers in the MVCS architecture. Because of this similarity, models and services are extended from the same base Actor class. A class that extends the Actor base can serve many functions within your application architecture. Within the context of MVCS, we are going to utilize extensions of Actor for defining both the models and the services an application will need to manage data and communicate with external entities. This document will refer to the model and service classes as Model and Service respectively.
+MVCS架构里的service和model在概念上有着非常多的相似之处. 因为这种相似性, model和service继承了同样的Actor基类. 继承Actor基类可以获得很多应用程序架构内的功能. 在MVCS的context里, 我们通过利用继承Actor基类来定义应用程序所需要用来管理数据以及和外界通讯的model和service类. 本文档将把model和service类分别叫做Model和Service.
 
-For clarification, this document refers to "framework actors" and "actors" in reference to all of the classes representing the four tiers of an application. This is not to be confused with the MVCS class named Actor, which is extended only by the Model and Service classes to be used in the examples contained here.
+澄清一点, 本文档把体现应用程序四个层的所有类都称为"framework actor"或"actor". 请不要和本例中包含的只被Model和Service类继承的MVCS类Actor混淆.
 
 h4(#modelandmodels). Model
 
-Model classes for use in the model tier encapsulate and provide an API for data. Models send event notifications when work has been performed on the data model. Models are generally highly portable entities.
+Model类用来在model层对数据进行封装并为其提供API. Model会在对数据模型进行某些工作之后发出事件通知. Model通常具有极高的便携性.
 
 h4(#serviceandservices). Service
 
-A Service for use in the service tier communicates with "the outside world" from within an application. Web services, file access, or any action that takes place outside of the scope of your application is appropriate for a service class. Service classes dispatch system events in response to external events. A service should be highly portable, encapsulating interaction with an external service.
+一个service层的Service用来和"外面的世界"进行通讯. Web service, 文件存取, 或者其它任何应用程序范围之外的行为对service类都很合适. Service类在处理外部事件时会广播系统事件. 一个service应该封装和外部服务的交互且具有非常高的便携性.
 
-h3(#frameworkevents). Framework Events
+h3(#frameworkevents). 框架事件
 
-Robotlegs uses native flash events for communication between framework actors. Custom events are typically utilized for this purpose, it is however possible to use existing Flash events for this same purpose. Robotlegs does not support Event bubbling, as it does not depend on the Flash display list as an event bus. Utilizing custom events allows developers to add properties to the Event that can be used as strongly typed payloads for system events between framework actors.
+Robotlegs使用Flash的原生事件用于框架actor之间的通讯. 自定义类通常用于此用途, 虽然使用现有的Flash事件同样可行. Robotlegs不支持事件冒泡, 因为它并不依赖Flash显示列表作为event bus. 使用自定义类允许开发者给事件添加属性来为框架actor之间通讯的系统事件提供强类型的负载.
 
-Events are sent from all framework actors: Mediators, Services, Models, and Commands. Mediators are the only actors that receive framework events. Commands are triggered in response to framework events. An event can be both received by a Mediator as well as trigger a command.
+所有的框架actor都可以发送事件: Mediator, Service, Model, 和 Command. Mediator是唯一接收框架事件的actor. Command是在框架事件的处理中被触发. 一个事件既可以被一个Mediator接收, 也可以出发一个command.
 
-Model and service classes should not listen for or respond to events. Doing so would tightly couple them to application specific logic and reduce the potential for portability and reuse.
+model和service不应该监听和处理事件. 这样做会把它们紧耦合到应用程序特有逻辑而降低潜在的便携性和复用性.
 
