@@ -1,0 +1,69 @@
+h2(#commands). Command
+
+Command是生命周期的无状态对象. 它们在被实例化和执行之后立即释放. Command应该只在处理框架事件时被执行, 而不应该被任何其他框架actor实例化或执行.
+
+h3(#commandresponsibilities). Command职责
+
+Command通过Context的CommandMap被注册到Context. CommandMap在Context和Command类里默认可用. Command类被注册到Context时接收4个参数: 一个事件类型; 响应这个事件时执行的Command类; 可选的事件类; 一个是否该Command只被执行一次随即被取消注册而不响应后续事件触发的一次性设置.
+
+h3(#triggeringcommands). 触发Command
+
+Command被Mediators, Services, Models, 和其它Command广播的框架事件触发. 典型的, 触发这个Command的事件会被注入这个Command, 以提供对其属性/负载的访问:
+
+<pre>
+public class MyCommand extends Command
+{
+	[Inject]
+	public var event:MyCustomEvent;
+	
+	[Inject]
+	public var model:MyModel;
+			
+	override public function execute():void
+	{
+		model.updateData( event.myCustomEventPayload )
+	}
+}
+</pre>
+
+当一个被映射的command在响应一个框架的时候被实例化时, 所有被映射并被[Inject]元数据标签标记过的依赖都会被注入到这个Command. 另外, 触发这个Command的事件实例也会被注入. 当这些依赖被注入完毕, Command的执行方法会被自动调用, Command便会执行它的工作. 你不需要, 而且不应该直接调用execute()方法. 这是框架实现的工作.
+
+h3(#chainingcommands). 链接Command
+
+链接command也是可行的:
+
+<pre lang="actionscript">
+public class MyChainedCommand extends Command
+{
+	[Inject]
+	public var event:MyCustomEvent;
+	
+	[Inject]
+	public var model:MyModel;
+			
+	override public function execute():void
+	{
+		model.updateData( event.myCustomEventPayload )
+		
+		//UPDATED_WITH_NEW_STUFF触发一个command的同时被
+		//一个mediator接收然后更新一个View Component, 但是只在需要这个响应的时候
+		if(event.responseNeeded)
+		    dispatch( new MyCustomEvent( MyCustomEvent.UPDATED_WITH_NEW_STUFF, model.getCalculatedResponse() ) )
+	}
+}
+</pre>
+
+使用这种方法可以把所需的任意多的Command链接在一起. 上面的例子使用了一个条件语句. 如果条件不满足Command就不会被链接. 这为你的Command执行应用程序工作提供了极大的灵活性.
+
+h3(#decouplingtiers). 应用程序层的解耦
+
+Command是解耦一个应用程序里各个actor的非常有用的机制. 因为一个Command永远不会被Mediator, Model或者Service实例化或执行, 这些类也就不会被耦合到command, 甚至都不知道command的存在.
+
+为了履行它们的职责, Command可能: 
+
+* 映射Mediators, Models, Services, 或者Context里的其它Commands
+* 广播可能被Mediator接收或者触发其它Command的事件.
+* 被注入Models, Services, 和Mediators以直接执行工作.
+
+bq(note). 需要注意的是, 不建议在一个Command里直接和Mediator交互. 虽然这是可行的, 但会将这个Mediator耦合到这个Command. 因为Mediator不像Service和Model, 它可以接受系统事件, 更好的做法是让Command广播事件, 然后让需要响应这些事件的Mediator监听它们.
+

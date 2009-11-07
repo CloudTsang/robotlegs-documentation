@@ -1,0 +1,128 @@
+h2(#mediators). Mediator
+
+Mediator 类用来作为用户交互和系统的 View Component 之间的中介. 一个 Mediator 可以在多个级别的粒度上履行它的职责, 中介一个应用程序整体和它的子组件, 或者一个应用程序的任何和所有子组件.
+
+h3(#mediatorresponsibilities). Mediator 职责
+
+Flash, Flex 和AIR应用程序为富视觉用户界面组件提供了无限的可能. 所有这些平台都提供了一套组件, 像DataGrids, Buttons, Labels和其它常用的UI组件. 也可以继承这些基本的组件来创建自定义组件, 创建复合组件, 或者完全重写新的组件.
+
+一个 View Component 是任何的UI组件和/或它的子组件. 一个 View Component 是已封装的, 尽可能多地处理自己的状态和操作. 一个 View Component 提供一个包含事件, 简单方法和属性的API, . Mediators负责代表它所中介的View Component和框架交互. 这包括监听组件及其子组件的事件, 调用方法, 和读取/设置组件的属性.
+
+一个 Mediator 监听它的 View Component 的事件, 通过 View Component 暴露的API访问数据. 一个 Mediators 通过响应其它框架actor的事件并对自己的View Component进行相应修改来代表它们. 一个Mediator通过转发View Component的事件或自己广播合适的事件到框架来通知其它的框架actor.
+
+h3(#mappingamediator). 映射一个Mediator
+
+任何可以访问到 _mediatorMap_ 实例的类都可以映射 Mediator. 这包括 Mediator, Context, 和 Command 类.
+
+这是映射一个 mediator 的语法:
+<pre>mediatorMap.mapView( ViewClass, MediatorClass, autoCreate, autoRemove );</pre>
+
+h3(#automaticmediation). View Component 的自动中介
+
+当映射一个view component类到中介时, 你可以指定是否自动为它创建 Mediator. 当此项为 _true_ 时 context 将监听这个view component的 ADDED_TO_STAGE 事件. 当收到这个事件这个view component会被自动中介, 它的 mediator 就可以开始发送和接收框架事件了.
+
+h3(#manualmediation). View Component 的手动中介
+
+有时候可能不希望或者不可能使用view component的自动中介. 在这种情况下可以手动创建一个Mediator类的实例:
+
+<pre>mediatorMap.createMediator(contextView);</pre>
+
+上面假设这个view component之前已经使用 _mediatorMap_ 的 _mapView()_ 方法映射过了.
+
+h3(#mappingthecontextview). 映射主程序 (_contextView_) Mediator
+
+映射 contextView 到一个 mediator 是一个常见的模式. 这是个特殊情况, 因为自动中介对 contextView 不起作用,  因为它已经被添加到舞台上而不再发出 _mediatorMap_ 自动中介所需要的事件. 这个映射通常在持有 _contextView_ 引用的 Context 的 _setup()_ 方法里完成:
+
+<pre>override public function startup():void
+{
+	mediatorMap.mapView(MediateApplicationExample, AppMediator);
+	mediatorMap.createMediator(contextView);
+}</pre>
+
+_contextView_ 并没有被完全中介, 还可以发送和接受框架事件.
+
+h3(#accessingmediatorviewcomponent). 访问一个 Mediator 的 View Component
+
+当一个 View Component 在一个 Context 的 contextView 里被添加到舞台上的时候, 它默认地会被根据 MediatorMap 做映射时的配置被自动中介. 在一个基本的 mediator 里, _viewComponent_ 会被注入为被中介的 view component. 一个 Mediator 的  _viewComponent_ 属性是 Object 类型的. 在大多数情况下, 我们希望访问一个强类型的对象以从中获益. 为此目的, 我们注入被中介的 view component 的强类型实例:
+
+<pre>public class GalleryLabelMediator extends Mediator implements IMediator
+{
+	[Inject]
+	public var myCustomComponent:MyCustomComponent;
+		
+	/**
+	* 覆写 onRegister 是添加此 Mediator 关心的任何系统或 View Component 事件的好机会.
+	*/
+	override public function onRegister():void
+	{
+		//添加一个事件监听器到 Context 来监听框架事件
+		eventMap.mapListener( eventDispatcher, MyCustomEvent.DO_STUFF, handleDoStuff );
+		//添加一个事件监听器到被中介的 view component
+		eventMap.mapListener( myCustomComponent, MyCustomEvent.DID_SOME_STUFF, handleDidSomeStuff)
+	}
+	
+	protected function handleDoStuff(event:MyCustomEvent):void
+	{
+		//把事件的强类型负载设置到 view component 的属性. 
+		//View component 很可能基于这个新数据管理自己的状态.
+		myCustomComponent.aProperty = event.payload
+	}
+	
+	protected function handleDidSomeStuff(event:MyCustomEvent):void
+	{
+		//把这个事件转发到框架
+		dispatch(event)
+	}
+}</pre>
+
+通过这种方法我们现在可以很方便地对被中介的 view component 的公开属性和方法进行访问.
+
+h3(#addingeventlistenerstomediators). 给一个 Mediator 添加事件监听
+
+事件监听器是具体 Mediator 的眼睛和鼻子. 因为框架内的所有通讯都是通过原生的Flash事件, Mediator 可以通过添加事件监听器来响应感兴趣的事件. 除了框架事件, Mediator同时监听所中介的 view component 的事件.
+
+通常在 Mediator 的 onRegister 方法里添加事件监听. 在 Mediator 的生命周期中的这个阶段, 它已经被注册并且它的 view component 和其它依赖也都已被注入. 具体的 Mediator 类必须覆写 onRegister 方法. 也可以在其它方法里添加事件监听, 比如响应框架事件和 view component 事件的处理器(事件句柄, event handler method)里.
+
+Mediators 装备了一个有 mapListener() 方法的 EventMap. 这个方法注册每个被添加到 Mediator 里的事件, 并且确保 mediator 被框架中取消注册时删除这些事件. Flash里删除事件是很重要的, 因为如果一个类里添加了事件而没有删除, Player将无法对此类进行运行时垃圾回收(GC, Garbage Collection). 也可以使用传统的 Flash 语法添加事件监听器, 但要注意也要手动把它们删除.
+
+h3(#mediatorslisteningfroframeworkevents). 监听框架事件
+
+所有框架里的actor在实例化时都会被注入一个  _eventDispatcher_ 属性. 这个 _eventDispatcher_ 就是一个 Mediator 发送和接受框架事件的机制. 
+
+<pre>eventMap.mapListener(eventDispatcher, SomeEvent.IT_IS_IMPORTANT, handleFrameworkEvent)</pre>
+
+通过这个语法, 一个 Mediator 现在监听了 _SomeEvent.IT_IS_IMPORTANT_ 事件并在  _handleFrameworkEvent_ 方法里处理它. 
+
+h3(#mediatorsdispatchingframeworkevents). 广播框架事件
+
+Mediator的一个很重要的职责就是向框架发送其它actor可能感兴趣的事件. 这些事件通常是在响应应用程序用户和被中介的 view component 之间的一些交互时发出的. 这里同样有一个可以减少发送事件到框架的代码输入的很有用的方法: 
+
+<pre>dispatch(new SomeEvent(SomeEvent.YOU_WILL_WANT_THIS, myViewComponent.someData))</pre>
+
+这个事件现在可以被其它 Mediators 接受或者执行一个 command 了. 发出事件的 Mediator 并不关心其它的 actor 如何回应这个事件, 它只是简单地广播一条有事发生的消息. 一个 mediator 也可以监听自己发出的事件, 然后据此作出回应.
+
+h3(#mediatorslisteningforcomponentevents). 监听 View Component 事件
+
+Mediator 负责所中介的 view component 发出的事件. 这可以是个独立组件, 比如 TextField 或者 Button, 也可以是有嵌套层级的复杂组件. 当 mediator 收到 view component 发出的事件会使用指定的方法处理它. 和框架事件一样, EventMap 的 mapListener 方法是给一个 mediator 添加事件监听的首选. 
+
+<pre>eventMap.mapListener(myMediatedViewComponent, SomeEvent.USER_DID_SOMETHING, handleUserDidSomethingEvent)</pre>
+
+响应一个 view component 的事件时, 一个 mediator 可能:
+
+* 考察事件的负载 (如果有)
+* 考察 view component 的当前状态
+* 对 view component 进行需要的工作
+* 发送系统事件以通知其它actor有事发生
+
+h3(#accessingmodelsandservicesfrommediators). 通过 Mediator 访问 Model 和 Service
+
+你的 mediator 可以监听 Service 和 Model 类派出的系统事件来提高松耦合性. 通过监听事件, 你的 mediator 不需要关心事件来源, 而只需直接使用事件携带的强类型的负载. 因此, 多个 mediator 可以监听相同的事件然后根据所收到的数据调整自己的状态. 
+
+在一个 mediator 里直接访问 service 可以提供很大便利而不会带来严重的耦合性问题. 一个 service 并不存储数据, 只是简单地提供一个向外部service发送请求并接受响应的API. 能够直接访问这个API可以避免在你的应用程序中增加不需要的 command 类来达到同样目标. 如果这个 service API 在很多 mediator 中通过相同的方式访问, 将此行为封装到一个 command 里有益于保持此行为的一致性并减少对此 service 的反复调用和在你的 mediator 里的直接访问.
+
+建议通过 model 和 service 实现的接口将 model 和 service 注入 mediator. 下面的 "Example Service":#serviceexample 章节可以找到一个这样的例子.
+
+h3(#accessingothermediatorsfromamediator). 访问其它 Mediator
+
+如同 Service 和 Model,在一个 Mediator 里也可以注入和访问其它的 Mediator. 这种做法是 *被强烈劝阻的* 因为这种紧耦合可以使用通过框架事件的通讯而简单避免. 
+
