@@ -1,0 +1,49 @@
+h2(#models). Model
+
+一个 Model 类用来管理对一个应用程序的数据模型的访问. 一个 Model 为其它框架actor提供一个 API 来访问, 操作和更新应用程序数据. 这个数据包括但不限于原生数据类型比如 String, Array, 或者像 ArrayCollection 一样的 *[domain specific Objects or collections of these]*
+
+Model 有时被当做简单的 Model 比如 UserModel, 有时也被当做 Proxy 比如 UserProxy. 在 Robotlegs 里, 这两种命名都是用作相同的目的, 为一个应用程序数据提供一个 API. 不管采用哪种命名 model 都是都将继承提供了核心框架依赖和一些有用方法的 Actor 基类. 本文档将这些类当做 Model. 
+
+h3(#modelresponsibilities). Model 职责
+
+Model类封装了应用程序数据模型并为其提供一个 API. 一个 Model 类是你的应用程序数据的看门人. 应用程序里的其它 actor 通过 Model 提供的 API 请求数据. 因为数据是通过 Model 更新, Model 装备了向框架广播事件的机制以向其它 actor 通知数据模型的变化使它们得以据此调整自己的状态. 
+
+除了控制对数据模型的访问, Model 通常也被用来保证数据状态的有效性. 这包括对数据进行计算, 或域特有逻辑的其它领域. Model 的这个职责非常重要. Model 是应用程序中最有潜力具有便携性的层. 通过把域逻辑放入 Model, 以后的 model 实现就不再需要像把域逻辑放入 View 或 Controller 层那样重复这些相同的逻辑, 
+
+作为一个例子, 你的 Model 里可能执行购物车数据的计算. 一个 Command 将会访问这个方法, 最终的计算结果将会被作为被某个 Mediator 监听的事件派发出去. 这个 mediator 将会根据这个被更新的数据更新自己的 view component, 应用程序的第一个迭代是个典型的 Flex 程序. 这个计算也很容易在一个 Mediator 甚至视图里进行. 应用程序的第二个迭代是一个需要全新视图元素的移动设备 Flash 应用程序. 因为这个逻辑在 Model 里, 所以可以被两个完全不同因素的视图复用. 
+
+h3(#mappingamodel). 映射一个 Model
+
+Injector 有几个方法可以用来映射你的 Model 类到你的框架actor. 另外, 这些方法事实上可以用来注入任何类到你的类里. 
+
+将一个已存在的实例当做一个单例注入映射, 使用下面的语法:
+<pre>injector.mapValue(MyModelClass, myModelClassInstance)</pre>
+
+为每个注入映射一个类的新实例, 使用下面的语法: 
+<pre>injector.mapClass(MyModelClass, MyModelClass)</pre>
+另外, 这也可以用来使用被注入的实现某接口的合适的类来映射这个用来注入的接口.
+<pre>injector.mapClass(IMyModelClass, MyModelClass)</pre>
+
+为某个接口或类映射一个单例实例, 使用下面的语法: 
+<pre>injector.mapSingleton(MyModelClass, MyModelClass)</pre>
+
+需要注意重要的一点, 当提及上面的一个单例时, 它并不是一个单例模式的单例. 在这个 Context 之外并不强制它作为一个单例. Injector 简单地确保这个类的唯一一个实例被注入. 这对处理你的应用程序数据模型的 Model 非常重要. 
+
+h3(#dispatchingeventsfrommodel). 从一个Model里广播事件
+
+Model 类提供一个方便的  _dispatch_ 方法用来发送框架事件:
+
+<pre>dispatch( new ImportantDataEvent(ImportantDataEvent.IMPORTANT_DATA_UPDATED))</pre>
+
+有很多理由派发一个事件, 包括但不限于:
+
+* 数据已被初始化并准备好被其它 actor 使用
+* 一些数据片被添加到 Model
+* 数据被从 Model 中删除
+* 数据已改变或者更新
+* 数据相关的状态已改变
+
+h3(#listeningforeventsinmodel). 在一个 Model 里监听框架事件
+
+虽然技术上可能, 但 *强烈不鼓励* 这样做. 不要这样做. 只是为了说清楚: *不要这样做*. 如果你这样做了, 不要说你没被警告过. 
+

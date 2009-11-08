@@ -1,0 +1,238 @@
+h2(#services). Service
+
+Service 用来访问应用程序范围之外的资源. 这包括但当然不限于: 
+
+* web services
+* 文件系统
+* 数据库
+* RESTful APIs
+* 通过 localConnection 的其它 Flash 应用程序
+
+Service 封装了这些和外部实体的交互, 并管理这个交互产生的 result , fault 或其它事件. 
+
+你可能注意到 Service 和 Model 的基类非常相像. 事实上, 你可能注意到除了类名, 它们其实是一样的. 那么为什么用两个类呢? Model 和 Service 类在一个应用程序里有完全不同的职责. 这些类的具体实现将不再相像. 如果没有这个分离, 你将经常发现 Model 类在访问外部服务. 这让 Model 有很多职责, 访问外部数据, 解析结果, 处理失败, 管理应用程序数据状态, 为数据提供一个 API, 为外部服务提供一个 API, 等等. 通过分离这些层有助于缓解这个问题.
+
+h3(#serviceresponsibilities). Service 职责
+
+一个 Service 类为你的应用程序提供一个和外部服务交互的 API. 一个 service 类将连接外部服务并管理它收到的响应. Service 类通常是无状态的实体. 他们并不存储从外部数据收到的数据, 而是发送框架事件来让合适的框架 actor 管理响应数据和失败. 
+
+h3(#mappingservice). 映射一个 Service
+
+有 "injector 的多个可用的方法":#mappingwithinjector 可以用来映射你的 Service 类以注入你的其它框架 actor. 另外, 这些方法也可以用来注入事实上任何类到你的类里. 
+
+将一个已存在的实例当做一个单例注入映射, 使用下面的语法:
+<pre>injector.mapValue(MyServiceClass, myServiceClassInstance)</pre>
+
+为每个注入映射一个类的新实例, 使用下面的语法: 
+<pre>injector.mapClass(MyServiceClass, MyServiceClass)</pre>
+另外, 这也可以用来使用被注入的实现某接口的合适的类来映射这个用来注入的接口.
+<pre>injector.mapClass(IMyServiceClass, MyServiceClass)</pre>
+
+为某个接口或类映射一个单例实例, 使用下面的语法: 
+<pre>injector.mapSingleton(MyServiceClass, MyServiceClass)</pre>
+
+需要注意重要的一点, 当提及上面的一个单例时, 它并不是一个单例模式的单例. 在这个 Context 之外并不强制它作为一个单例. Injector 简单地确保这个类的唯一一个实例被注入. 
+
+h3(#servicelisteningforframeworkevents). 在一个 Service 里监听框架事件
+
+虽然技术上可能, 但 *强烈不鼓励* 这样做. 不要这样做. 只是为了说清楚: *不要这样做*. 如果你这样做了, 不要说你没被警告过. 
+
+h3(#servicedispatchingframeworkevents). 广播框架事件
+
+Service 类提供一个方便的  _dispatch_ 方法用来发送框架事件:
+
+<pre>dispatch( new ImportantServiceEvent(ImportantServiceEvent.IMPORTANT_SERVICE_EVENT))</pre>
+
+h3(#serviceexample). Service 示例
+
+下面是来自 "Image Gallery":http://github.com/robotlegs/robotlegs-demos-Bundle/tree/master/FlickrImageGallery/ demo 的 Flickr service 类 . "The Flickr API AS3 Library":http://code.google.com/p/as3flickrlib/ 做了很多连接到 Flickr 的底层处理. 这个例子使用了它并为在这个例子范围内使用提供了一个简单的抽象. 
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	import com.adobe.webapis.flickr.FlickrService;
+	import com.adobe.webapis.flickr.Photo;
+	import com.adobe.webapis.flickr.events.FlickrResultEvent;
+	import com.adobe.webapis.flickr.methodgroups.Photos;
+	import com.adobe.webapis.flickr.methodgroups.helpers.PhotoSearchParams;
+	
+	import org.robotlegs.demos.imagegallery.events.GalleryEvent;
+	import org.robotlegs.demos.imagegallery.models.vo.Gallery;
+	import org.robotlegs.demos.imagegallery.models.vo.GalleryImage;
+	import org.robotlegs.mvcs.Actor;
+
+    /**
+     *  这个类使用了 Adobe 提供的 Flickr API 来连接到 
+     *  Flickr 并获取图片. 它最开始加载当前最"有趣"的
+     *  的照片, 同时也提供了搜索其它关键词的能力. 
+     */
+	public class FlickrImageService extends Actor implements IGalleryImageService
+	{
+		private var service:FlickrService;
+		private var photos:Photos;
+		
+		protected static const FLICKR_API_KEY:String = "516ab798392cb79523691e6dd79005c2";
+		protected static const FLICKR_SECRET:String = "8f7e19a3ae7a25c9";
+		
+		public function FlickrImageService()
+		{
+			this.service = new FlickrService(FLICKR_API_KEY);
+		}
+		
+		public function get searchAvailable():Boolean
+		{
+			return true;
+		}
+				
+		public function loadGallery():void
+		{
+			service.addEventListener(FlickrResultEvent.INTERESTINGNESS_GET_LIST, handleSearchResult);
+			service.interestingness.getList(null,"",20)
+		}
+		
+		public function search(searchTerm:String):void
+		{
+			if(!this.photos)
+				this.photos = new Photos(this.service);
+			service.addEventListener(FlickrResultEvent.PHOTOS_SEARCH, handleSearchResult);
+			var p:PhotoSearchParams = new PhotoSearchParams()
+			p.text = searchTerm;
+			p.per_page = 20;
+			p.content_type = 1;
+			p.media = "photo"
+			p.sort = "date-posted-desc";
+			this.photos.searchWithParamHelper(p);				
+		}
+		
+		protected function handleSearchResult(event:FlickrResultEvent):void
+		{
+			this.processFlickrPhotoResults(event.data.photos.photos);
+		}
+		
+		protected function processFlickrPhotoResults(results:Array):void
+		{
+			var gallery:Gallery = new Gallery();
+						
+			for each(var flickrPhoto:Photo in results)
+			{
+				var photo:GalleryImage = new GalleryImage()
+				var baseURL:String = 'http://farm' + flickrPhoto.farmId + '.static.flickr.com/' + flickrPhoto.server + '/' + flickrPhoto.id + '_' + flickrPhoto.secret;
+				photo.thumbURL = baseURL + '_s.jpg';
+				photo.URL = baseURL + '.jpg';
+				gallery.photos.addItem( photo );
+			}
+			
+			dispatch(new GalleryEvent(GalleryEvent.GALLERY_LOADED, gallery));
+		}
+		
+	}
+}</pre>
+
+FlickrGalleryService 提供了一个连接到一个 gallery 服务的非常简单的接口. 应用程序可以 _loadGallery_, _search_, 并查询 _searchAvailable_ 是 true 还是 false. IGalleryService 接口定义的接口:
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	public interface IGalleryImageService
+	{
+		function loadGallery():void;
+		function search(searchTerm:String):void;
+		function get searchAvailable():Boolean;
+	}
+}</pre>
+
+h4(#serviceimplementsinterface). Services 应该实现一个接口
+
+通过创建实现了接口的 service, 为了测试在运行时切换它们, 或者对应用程序的最终用户提供对其它 service 的访问将很简单. 比如, FlickrGalleryService 可以很容易替换为 XMLGalleryService:
+
+<pre>package org.robotlegs.demos.imagegallery.remote.services
+{
+	import mx.rpc.AsyncToken;
+	import mx.rpc.Responder;
+	import mx.rpc.http.HTTPService;
+	
+	import org.robotlegs.demos.imagegallery.events.GalleryEvent;
+	import org.robotlegs.demos.imagegallery.models.vo.Gallery;
+	import org.robotlegs.demos.imagegallery.models.vo.GalleryImage;
+	import org.robotlegs.mvcs.Actor;
+
+	public class XMLImageService extends Actor implements IGalleryImageService
+	{
+		protected static const BASE_URL:String = "assets/gallery/";
+		
+		public function XMLImageService()
+		{
+			super();
+		}
+
+		public function get searchAvailable():Boolean
+		{
+			return false;
+		}
+				
+		public function loadGallery():void
+		{
+			var service:HTTPService = new HTTPService();
+			var responder:Responder = new Responder(handleServiceResult, handleServiceFault);
+			var token:AsyncToken;
+			service.resultFormat = "e4x";
+			service.url = BASE_URL+"gallery.xml";
+			token = service.send();
+			token.addResponder(responder);
+		}
+		
+		public function search(searchTerm:String):void
+		{
+			trace("search is not available");
+		}
+		
+		protected function handleServiceResult(event:Object):void
+		{
+			var gallery:Gallery = new Gallery();
+						
+			for each(var image:XML in event.result.image)
+			{
+				var photo:GalleryImage = new GalleryImage()
+				photo.thumbURL = BASE_URL + "images/" + image.@name + '_s.jpg';
+				photo.URL = BASE_URL + "images/" + image.@name + '.jpg';
+				gallery.photos.addItem( photo );
+			}
+			
+			dispatchEvent(new GalleryEvent(GalleryEvent.GALLERY_LOADED, gallery));
+		}
+		
+		protected function handleServiceFault(event:Object):void
+		{
+			trace(event);
+		}
+	}
+}</pre>
+
+XML gallery 提供了和 Flickr 一样的方法可以访问并可在任何 IGalleryService 接口被调用的地方被替换. 这些 services 派发相同的事件并且在最终的应用程序里很难区分. 在这个例子里, 搜索并没有被实现, 但搜索功能在这个 service 里也同样可以很容易实现: 
+
+建议所有的 service 都实现一个定义了它们 API 的接口. 在当做一个注入依赖接收一个 service 的框架 actor 里可以请求这个接口, 而不是具体的实现. 
+
+<pre>injector.mapSingletonOf(IGalleryService, FlickrGalleryService);</pre>
+
+<pre>[Inject]
+public var galleryService:IGalleryService</pre>
+
+你可以通过简单地改变注入来使用你的类代替这个 gallery service:
+
+<pre>injector.mapSingletonOf(IGalleryService, XMLGalleryService);</pre>
+
+这种方式可以为一个应用程序提供健壮性, 灵活性, 和增强的可测试性. 
+
+h4(#parsingresultsinservice). 在一个 Service 里解析数据
+
+在上面的例子里 service 类或者外部服务提供了不符合应用程序域的对象. Flickr service 提供强类型的 Photo 对象而 XML service 提供 xml. 这些数据类型都很好用, 但是并不符合我们应用程序的 context. 它们是外来者. 可以在围绕外部数据类型对应用程序建模, 或者更可取地, 转换这些数据以符合应用程序.
+
+应用程序里有两处可以进行这项操作/转换. Service 和 Model 都很适合. Service 是进入外部数据的第一个点, 所以它是操作一个外部服务返回的数据的更好的选择. 外来数据应该在第一个机会转换到应用程序域.
+
+_提供一个使用工厂类而不是在 service 里生成应用程序域对象的例子... 适当的_
+
+当数据被转换为应用程序域特有的对象之后发出带有强类型负载的事件以被对此关心的 actor 立即使用. 
+
+h4(#serviceevents). Service 事件
+
+service 组合的最后一个部分是自定义事件. 没有事件的 service 只是哑巴. 他们可能做的任何工作都不会被其它框架成员注意到. 一个 service 将会使用自定义事件来向应用程序发出声音. 事件并不一定是唯一的意图. 如果这个 service 正在转换数据它可以使用一个普通的事件来派发强类型的数据给感兴趣的应用程序 actor.
+
+
