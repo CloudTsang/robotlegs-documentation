@@ -1,14 +1,14 @@
-h3(#mappingwithinjector). Injector类的映射注入
+h3(#mappingwithinjector). Injector 类的映射注入
 
-具体Injector类的适配器都遵照IInjector接口. 这个接口为注入提供了统一的API, 而不管所提供的依赖注入解决方案. 本文档专注于 SwiftSuspenders, 但这些语法同样适应于其它任何遵照Iinjector接口的Injector.
+具体 Injector 类的适配器都遵照 IInjector 接口. 这个接口为不同的依赖注入解决方案提供了统一的API. 本文档专注于 SwiftSuspenders, 但这些语法同样适应于其它任何遵照 Iinjector 接口的 Injector.
 
-_injector_ 是你应用程序里所发生的所有依赖注入的工作车间. 它用来注入框架行动者(actor), 但也可以用来执行你的应用程序所需要的任何其他注入. 这包括但不限于 RemoteObjects, HTTPServices, 工厂类, 或者事实上任何可能需要成为你的对象所需要的依赖的类/接口.
+_injector_ 是你应用程序里所发生的所有依赖注入的生产车间. 它用来注入框架 actor, 同时也可以用来执行你的应用程序所需要的任何其它注入. 这包括但不限于 RemoteObjects, HTTPServices, 工厂类, 或者事实上任何有可能成为你的对象所需要的依赖的类/接口.
 
-下面是实现IInjector接口的类所提供的四个映射方法:
+下面是实现 IInjector 接口的类所提供的四个映射方法:
 
 h4. mapValue
 
-mapValue用来映射一个对象的特定实例到一个injector. 当请求一个特定的类，使用类的这个特定实例来注入.
+mapValue 用来映射一个对象的特定实例到一个 injector. 当请求一个特定的类，使用类的这个特定实例来注入.
 
 <pre>//你的应用程序中某个映射/配置发生的地方
 var myClassInstance:MyClass = new MyClass();
@@ -20,15 +20,15 @@ public var myClassInstance:MyClass</pre>
 
 <pre>mapValue(whenAskedFor:Class, instantiateClass:Class, named:String = null)</pre>
 
-MyClass的实例被创建和保留，等待在被请求的时候被注入.  当它被请求的时候，那个实例被用来满足这个注入请求. 请注意很重要的一点，因为你已经手动创建并通过mapValue映射了一个类实例, 这个实例的依赖将不会被自动注入. 你需要手动注入这些依赖，或者通过injector:
+MyClass 的实例被创建和保留，并在被请求的时候被注入.  当此类被请求的时候，这个实例被用来满足这个注入请求. 请注意很重要的一点，因为你已经手动创建并通过 mapValue 映射了一个类实例, 这个实例所需要的依赖将不会被自动注入. 你需要手动或通过 injector 注入这些依赖:
 
 <pre>injector.injectInto(myClassInstance);</pre>
 
-这将立即提供这个实例的已经映射的可以注入的属性。.
+这将立即为此实例提供已映射的可以注入的属性。.
 
 h4. mapClass
 
-mapClass 为每一个注入请求提供一个这个被映射的类的 _特有_( _unique_) 实例.
+mapClass 为每一个注入请求提供这个被映射的类的一个 _特有_( _unique_) 实例.
 
 <pre>//你的应用程序中某个映射/配置发生的地方
 injector.mapClass(MyClass);</pre>
@@ -52,11 +52,11 @@ injector 提供了一个方法来实例化被映射的对象:
 <pre>injector.mapClass(MyClass);
 var myClassInstance:MyClass = injector.instantiate(MyClass);</pre>
 
-这提供了你的对象的一个实例，并且这个对象中包含的所有被映射的注入点(injection points)都已被填充.
+这提供你的对象的一个实例，并填充了此对象包含的所有被映射的注入点(injection points).
 
 h4. mapSingleton
 
-mapSingleton为每一个注入提供被请求的类的一个 _单一_(_single_)  实例. 为所有映射提供一个类的单一实例确保你维护一个一致的状态并且不用担心创建被注入类的多余实例. 这是一个被框架强制和管理的单一实例, 而不是一个在类内部强制的单例(Singleton). 
+mapSingleton 为每一个注入请求提供类的一个 _单一_(_single_)  实例. 为所有映射提供类的单一实例确保你维护一个一致的状态并且不用担心创建被此类的多余实例. 这是一个被框架强制和管理的单一实例, 而不是一个在类内部强制的单例(Singleton). 
 
 <pre>//你的应用程序中某个映射/配置发生的地方
 injector.mapSingleton(MyClass);</pre>
@@ -71,13 +71,13 @@ public var myClassInstance:MyClass</pre>
 [Inject]
 public var myClassInstance:MyClass</pre>
 
-在上面的例子里, 两个注入请求都将由被请求类的相同实例填充. _这个注入是被延迟的_, 即对象直到被第一次请求才被实例化.
+在上面的例子里, 两个注入请求都将由被请求类的相同实例填充. _这个注入是被延迟的_, 即对象直到第一次被请求才被实例化.
 
 <pre>mapSingletonOf(whenAskedFor:Class, useSingletonOf:Class, named:String = null)</pre>
 
 h4. mapSingletonOf
 
-mapSingletonOf在功能上非常像mapSingleton. 它对映射抽象类和接口很有用, 而mapSingleton用来映射具体类实现.
+mapSingletonOf在功能上非常像 mapSingleton. 它对映射抽象类和接口很有用, 而 mapSingleton 用来映射具体类实现.
 
 <pre>//你的应用程序中某个映射/配置发生的地方
 injector.mapSingletonOf(IMyClass, MyClass); //MyClass implements IMyClass</pre>
@@ -91,5 +91,5 @@ public var myClassInstance:IMyClass</pre>
 [Inject]
 public var myClassInstance:IMyClass</pre>
 
-这个注入方法对创建使用多态的更加可测试的的类很有用. 在下面的 "Example Service":#serviceimplementsinterface 章节可以找到一个例子.
+这个注入方法对创建使用多态的更具可测性的类非常有用. 在下面的 "Service 实例":#serviceimplementsinterface 章节可以找到一个例子.
 

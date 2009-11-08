@@ -1,8 +1,8 @@
 h2(#whatisrobotlegs). Robotlegs 是什么
 
-Robotlegs是一个用来开发Flash, Flex, 和 AIR 应用的纯AS3微架构(框架). Robotlegs专注于将应用程序各层排布在一起并提供它们相互通讯的机制. Robotlegs试图通过提供一种解决常见开发问题的经过时间检验的架构解决方案来加速开发. Robotlegs无意锁定你到框架, 你的类就是你的类的样子, 而且应该很容易地切换到其他框架.
+Robotlegs 是一个用来开发Flash, Flex, 和 AIR 应用的纯 AS3 微架构(框架). Robotlegs 专注于将应用程序各层排布在一起并提供它们相互通讯的机制. Robotlegs 试图通过提供一种解决常见开发问题的经过时间检验的架构解决方案来加速开发. Robotlegs 无意锁定你到框架, 你的类就是你的类的样子, 而且应该很容易地切换到其他框架.
 
 框架提供一个基于 "Model-View-Controller":http://en.wikipedia.org/wiki/Model–view–controller 元设计模式的默认实现. 这个实现提供一个针对应用程序结构和设计的强烈建议. 虽然它确实轻微减低了你的应用程序的便携性, 不过它依然以最低限度影响你的具体类为目标. 通过扩展 "MVCS":#mvcs 实现类, 你可以获得很多有用的方法和属性.
 
-你不必使用Robotlegs的标准 "MVCS":#mvcs 实现.你可以使用它的任意部分, 或者完全不使用它, 或者使用自己的实现来适应你的需求. 它是为了提供合适的参考实现和快速开始使用Robotlegs而包含进来。
+你不必使用Robotlegs的标准 "MVCS":#mvcs 实现.你可以使用它的任意部分, 或者完全不使用它, 或者使用自己的实现来适应你的需求. 它是为了提供合适的参考实现和快速开始使用 Robotlegs 而被包含进来。
 

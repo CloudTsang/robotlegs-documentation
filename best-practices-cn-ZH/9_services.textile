@@ -14,7 +14,7 @@ Service 封装了这些和外部实体的交互, 并管理这个交互产生的 
 
 h3(#serviceresponsibilities). Service 职责
 
-一个 Service 类为你的应用程序提供一个和外部服务交互的 API. 一个 service 类将连接外部服务并管理它收到的响应. Service 类通常是无状态的实体. 他们并不存储从外部数据收到的数据, 而是发送框架事件来让合适的框架 actor 管理响应数据和失败. 
+一个 Service 类为你的应用程序提供一个和外部服务交互的 API. 一个 service 类将连接外部服务并管理它收到的响应. Service 类通常是无状态的实体. 他们并不存储从外部服务收到的数据, 而是发送框架事件来让合适的框架 actor 管理响应数据和失败. 
 
 h3(#mappingservice). 映射一个 Service
 
@@ -35,7 +35,7 @@ h3(#mappingservice). 映射一个 Service
 
 h3(#servicelisteningforframeworkevents). 在一个 Service 里监听框架事件
 
-虽然技术上可能, 但 *强烈不鼓励* 这样做. 不要这样做. 只是为了说清楚: *不要这样做*. 如果你这样做了, 不要说你没被警告过. 
+虽然技术上可能, 但 *强烈不建议* 这样做. 不要这样做. 只是为了说清楚: *不要这样做*. 如果你这样做了, 不要说你没被警告过. 
 
 h3(#servicedispatchingframeworkevents). 广播框架事件
 
@@ -141,7 +141,7 @@ FlickrGalleryService 提供了一个连接到一个 gallery 服务的非常简�
 
 h4(#serviceimplementsinterface). Services 应该实现一个接口
 
-通过创建实现了接口的 service, 为了测试在运行时切换它们, 或者对应用程序的最终用户提供对其它 service 的访问将很简单. 比如, FlickrGalleryService 可以很容易替换为 XMLGalleryService:
+通过创建实现了接口的 service, 为了测试在运行时切换它们, 或者对应用程序的最终用户提供对其它 service 的访问将会很简单. 比如, FlickrGalleryService 可以很容易替换为 XMLGalleryService:
 
 <pre>package org.robotlegs.demos.imagegallery.remote.services
 {
@@ -206,9 +206,9 @@ h4(#serviceimplementsinterface). Services 应该实现一个接口
 	}
 }</pre>
 
-XML gallery 提供了和 Flickr 一样的方法可以访问并可在任何 IGalleryService 接口被调用的地方被替换. 这些 services 派发相同的事件并且在最终的应用程序里很难区分. 在这个例子里, 搜索并没有被实现, 但搜索功能在这个 service 里也同样可以很容易实现: 
+XML gallery 提供了和 Flickr 一样的方法可以访问并可在任何 IGalleryService 接口被调用的地方进行替换. 这些 service 派发相同的事件并且在最终的应用程序里很难区分. 在这个例子里, 搜索并没有被实现, 但搜索功能在这个 service 里也同样可以很容易实现,
 
-建议所有的 service 都实现一个定义了它们 API 的接口. 在当做一个注入依赖接收一个 service 的框架 actor 里可以请求这个接口, 而不是具体的实现. 
+建议所有的 service 都实现一个定义了它们 API 的接口. 在框架 actor 里接收一个 service 作为依赖注入时可以请求这个接口, 而不是具体的实现. 
 
 <pre>injector.mapSingletonOf(IGalleryService, FlickrGalleryService);</pre>
 
@@ -223,7 +223,7 @@ public var galleryService:IGalleryService</pre>
 
 h4(#parsingresultsinservice). 在一个 Service 里解析数据
 
-在上面的例子里 service 类或者外部服务提供了不符合应用程序域的对象. Flickr service 提供强类型的 Photo 对象而 XML service 提供 xml. 这些数据类型都很好用, 但是并不符合我们应用程序的 context. 它们是外来者. 可以在围绕外部数据类型对应用程序建模, 或者更可取地, 转换这些数据以符合应用程序.
+在上面的例子里 service 类或者外部服务提供了不符合应用程序域的对象. Flickr service 提供强类型的 Photo 对象而 XML service 提供 xml. 这些数据类型都很好用, 但是并不符合我们应用程序的 context. 它们是外来者. 可以围绕外部数据类型对应用程序进行建模, 或者更可取地, 转换这些数据以符合应用程序.
 
 应用程序里有两处可以进行这项操作/转换. Service 和 Model 都很适合. Service 是进入外部数据的第一个点, 所以它是操作一个外部服务返回的数据的更好的选择. 外来数据应该在第一个机会转换到应用程序域.
 

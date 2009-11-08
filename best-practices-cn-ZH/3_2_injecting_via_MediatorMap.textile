@@ -1,15 +1,15 @@
-h3(#mappingwithmediatormap). MediatorMap类的依赖注入
+h3(#mappingwithmediatormap). MediatorMap 类的依赖注入
 
-MediatorMap实现IMediatorMap接口. IMediatorMap提供两个方法来映射你的mediators到views并注册它们用来注入.
+MediatorMap 实现 IMediatorMap 接口. IMediatorMap 提供两个方法来将你的 mediators 映射到 view 并注册它们以便用来注入.
 
 <pre>mapView(viewClassOrName:*, mediatorClass:Class, injectViewAs:Class = null, autoCreate:Boolean = true, autoRemove:Boolean = true):void</pre>
 
-*mapView* 接受一个视图类, MyAwesomeWidget, 或者一个视图的类全名, _com.me.app.view.components::MyAwesomeWidget_ 作为第一个参数. 第二个参数是将要作为视图组件中介的Mediator类. *[需要放入 injectAsView]* 最后的两个参数autoCreate和autoRemove是两个用来提供方便的mediator自动管理的布尔值开关.
+*mapView* 接受一个视图类, MyAwesomeWidget, 或者一个视图的类全名, _com.me.app.view.components::MyAwesomeWidget_ 作为第一个参数. 第二个参数是将要作为视图组件中介的 Mediator 类. *[injectViewAs 内容未完成]*, 最后的两个参数 autoCreate 和 autoRemove 提供方便的自动管理 mediator 的布尔值开关.
 
 <pre>//在你的程序里某个映射/配置发生的地方
 mediatorMap.mapView(MyAwesomeWidget, MyAwesomeWidgetMediator); </pre>
 
-<pre>//在conntextView的显示列表里的某个地方
+<pre>//在conntextView 的显示列表里的某个地方
 var myAwesomeWidget:MyAwesomeWidget = new MyAwesomeWidget();
 this.addChild(myAwesomeWidget); // ADDED_TO_STAGE 事件被抛出, 触发这个视图组件的中介机制</pre>
 

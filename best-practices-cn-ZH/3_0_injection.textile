@@ -1,16 +1,16 @@
-h2(#usingtheinjectors). 使用Injectors
+h2(#usingtheinjectors). 使用 Injectors
 
-Robotlegs采用一种适配器(adapter)机制来为框架提供依赖注入机制. 默认地, 框架配备了 "SwiftSuspenders":http://github.com/tschneidereit/SwiftSuspenders 注入/反射库来适合这个要求. 另有 SmartyPants-IoC 和 Spring Actionscript的适配器可以使用. 可能有潜在的特定需求来使用其它的依赖注入适配器, 但是如果没有特别的理由, 建议使用默认的 "SwiftSuspenders":http://github.com/tschneidereit/SwiftSuspenders 因为它为Robotlegs做了一些特别调整.
+Robotlegs 采用一种适配器(adapter)机制来为框架提供依赖注入机制. 默认地, 框架配备了 "SwiftSuspenders":http://github.com/tschneidereit/SwiftSuspenders 注入/反射库来适合这个要求. 另有 SmartyPants-IoC 和 Spring Actionscript 的适配器可以使用. 可能有潜在的特定需求来使用其它的依赖注入适配器, 但是如果没有特别的理由, 建议使用默认的 "SwiftSuspenders":http://github.com/tschneidereit/SwiftSuspenders, 因为它为 Robotlegs 做了一些特别调整.
 
-h3(#injectionsyntax). SwiftSuspenders适配器注入语法
+h3(#injectionsyntax). SwiftSuspenders 适配器注入语法
 
-SwiftSuspenders支持三种类型的依赖注入
+SwiftSuspenders 支持三种类型的依赖注入
 
 * 属性(域)注入
-* 参数 (方法/设置) 注入
+* 参数(方法/设值) 注入
 * 构造注入
 
-鉴于此文档的目的, 我们将特别介绍属性注入, 以及在Robotlegs里如何使用. 将属性注入类有两种选择. 你可以使用未命名，或命名的注入:
+鉴于此文档的目的, 我们将特别介绍属性注入, 以及在 Robotlegs 里如何使用. 将属性注入类有两种选择. 你可以使用未命名，或命名的注入:
 
 <pre>[Inject]
 public var myDependency:Depedency; //未命名注入</pre>
@@ -18,5 +18,5 @@ public var myDependency:Depedency; //未命名注入</pre>
 <pre>[Inject(name="myNamedDependency")]
 public var myNamedDependency:NamedDepedency; //命名注入</pre>
 
-Robotlegs里三处提供了注入映射. MediatorMap, CommandMap, 和直接通过Injector. MediatorMap和CommandMap也都是使用Injector, 但它们同时做了一些各自层(tier)所需要的额外工作. 顾名思义, MediatorMap用来映射Mediators, CommandMap用来映射Commands, 其它所有需要被注入的内容 (包括但不限于Models) 都要直接使用Injector映射.
+Robotlegs 里三处提供了注入映射. MediatorMap, CommandMap, 和直接通过 Injector . MediatorMap 和 CommandMap 也都是使用 Injector, 但它们同时做了一些各自层(tier)所需要的额外工作. 顾名思义, MediatorMap 用来映射 Mediator, CommandMap 用来映射 Command, 其它所有需要被注入的内容 (包括但不限于 Model) 都要直接使用 Injector 映射.
 

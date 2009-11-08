@@ -3,50 +3,50 @@ h2. 目录
 
 # *"Robotlegs 是什么":#whatisrobotlegs*
 # "依赖注入":#dependencyinjection
-# "使用Injectors":#usingtheinjectors
-** "SwiftSuspenders适配器注入语法":#injectionsyntax
-** "Injector类的映射注入":#mappingwithinjector
-** "MediatorMap类的依赖注入":#mappingwithmediatormap
-** "Injection Mapping with the CommandMap Class":#mappingwithcommandmap
+# "使用 Injectors":#usingtheinjectors
+** "SwiftSuspenders 适配器注入语法":#injectionsyntax
+** "Injector 类的映射注入":#mappingwithinjector
+** "MediatorMap 类的依赖注入":#mappingwithmediatormap
+** "CommandMap 类的依赖注入":#mappingwithcommandmap
 # "The Context":#thecontext
-# *"MVCS Reference Implementation":#mvcs*
+# *"MVCS 参考实现":#mvcs*
 ## "Context":#context
 ## "Controller & Commands":#controllersandcommands
 ## "View & Mediators":#viewandmediators
 ## "Model, Service and the Actor":#modelandservice
 ## "Model":#modelandmodels
 ## "Service":#serviceandservices
-## "Framework Events":#frameworkevents
+## "框架事件":#frameworkevents
 ## *"Commands":#commands*
-### "Command Responsibilities":#commandresponsibilities
-### "Triggering Commands":#triggeringcommands 
-### "Chaining Commands":#chainingcommands
-### "Decoupling Application Tiers":#decouplingtiers
+### "Command 职责":#commandresponsibilities
+### "触发 Command":#triggeringcommands 
+### "链接 Command":#chainingcommands
+### "应用程序层的解耦":#decouplingtiers
 ## *"Mediators":#mediators*
-### "Mediator Responsibilities":#mediatorresponsibilities
-### "Mapping a Mediator":#mappingamediator
-### "Automatic Mediation of View Components":#automaticmediation
-### "Manually Mediation of View Components":#manualmediation
-### "Mapping the Main Application (_contextView_) Mediator":#mappingthecontextview
-### "Accessing a Mediator's View Component":#accessingmediatorviewcomponent 
-### "Adding Event Listeners to a Mediator":#addingeventlistenerstomediators 
-### "Listening for Framework Events":#mediatorslisteningfroframeworkevents 
-### "Dispatching Framework Events":#Mediatorsdispatchingframeworkevents 
-### "Listening for View Component Events":#mediatorslisteningforcomponentevents 
-### "Accessing Models and Services via a Mediator":#accessingmodelsandservicesfrommediators 
-### "Accessing Other Mediators":#accessingothermediatorsfromamediator 
+### "Mediator 职责":#mediatorresponsibilities
+### "映射一个 Mediator":#mappingamediator
+### "View Component 的自动中介":#automaticmediation
+### "View Component 的手动中介":#manualmediation
+### "映射主程序 (_contextView_) Mediator":#mappingthecontextview
+### "访问一个 Mediator 的 View Component":#accessingmediatorviewcomponent 
+### "给一个 Mediator 添加事件监听":#addingeventlistenerstomediators 
+### "监听框架事件":#mediatorslisteningfroframeworkevents 
+### "广播框架事件":#Mediatorsdispatchingframeworkevents 
+### "监听 View Component 事件":#mediatorslisteningforcomponentevents 
+### "通过 Mediator 访问 Model 和 Service":#accessingmodelsandservicesfrommediators 
+### "访问其它 Mediator":#accessingothermediatorsfromamediator 
 ## *"Models":#models*
-### "Model Responsibilities":#modelresponsibilities 
-### "Mapping a Model":#mappingamodel 
-### "Dispatching Events from a Model":#dispatchingeventsfrommodel 
-### "Listening for Framework Events in a Model":#listeningforeventsinmodel 
+### "Model 职责":#modelresponsibilities 
+### "映射一个 Model":#mappingamodel 
+### "从一个Model里广播事件":#dispatchingeventsfrommodel 
+### "在一个 Model 里监听框架事件":#listeningforeventsinmodel 
 ## *"Services":#services*
-### "Service Responsibilities":#serviceresponsibilities 
-### "Mapping a Service":#mappingservice 
-### "Listening for Framework Events in a Service":#servicelisteningforframeworkevents 
-### "Dispatching Framework Events":#servicedispatchingframeworkevents 
-### "Example Service":#serviceexample
-**** "Services Should Implement an Interface":#serviceimplementsinterface
-**** "Parsing Data in a Service":#parsingresultsinservice
-**** "Service Events":#serviceevents
+### "Service 职责":#serviceresponsibilities 
+### "映射一个 Service":#mappingservice 
+### "在一个 Service 里监听框架事件":#servicelisteningforframeworkevents 
+### "广播框架事件":#servicedispatchingframeworkevents 
+### "Service 示例":#serviceexample
+**** "Services 应该实现一个接口":#serviceimplementsinterface
+**** "在一个 Service 里解析数据":#parsingresultsinservice
+**** "Service 事件":#serviceevents
 
